@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Révision Bac Pro — Toutes matières</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --text: #f0ede8;
+    --muted: #888;
+    --accent: #d4a853;
+    --green: #4caf73;
+    --green-bg: #0d2b17;
+    --green-border: #2d6e45;
+    --red: #e05555;
+    --red-bg: #2b0d0d;
+    --red-border: #7a2a2a;
+    --mono: 'IBM Plex Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--display); min-height: 100vh; }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+  .login-box {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 2.5rem 2rem; width: 100%; max-width: 380px;
+  }
+  .login-logo { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin-bottom: 0.3rem; letter-spacing: -0.04em; }
+  .login-logo span { color: var(--text); }
+  .login-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-bottom: 2rem; }
+  .login-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .ltab { flex: 1; padding: 0.55rem; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--muted); font-family: var(--display); font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+  .ltab.active { border-color: var(--accent); color: var(--accent); background: rgba(212,168,83,0.08); }
+  .login-field { margin-bottom: 1rem; }
+  .login-field label { display: block; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .login-field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; color: var(--text); font-family: var(--mono); font-size: 0.88rem; outline: none; transition: border-color 0.15s; }
+  .login-field input:focus { border-color: var(--accent); }
+  .btn-login { width: 100%; background: var(--accent); color: #0f0f0f; border: none; border-radius: 8px; padding: 0.9rem; font-family: var(--display); font-size: 0.95rem; font-weight: 800; cursor: pointer; margin-top: 0.5rem; transition: opacity 0.15s; }
+  .btn-login:hover { opacity: 0.9; }
+  .login-err { background: var(--red-bg); border: 1px solid var(--red-border); border-radius: 8px; padding: 0.65rem 1rem; font-family: var(--mono); font-size: 0.75rem; color: var(--red); margin-top: 0.75rem; display: none; }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 1.2rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; background: var(--bg); z-index: 100;
+  }
+  .logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; color: var(--accent); }
+  .logo span { color: var(--text); }
+  .header-right { display: flex; align-items: center; gap: 1.5rem; }
+  .stats-bar { display: flex; gap: 1.5rem; align-items: center; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+  .stat { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .stat strong { font-size: 0.95rem; color: var(--text); font-weight: 500; }
+  .stat.green strong { color: var(--green); }
+  .stat.red strong { color: var(--red); }
+  .xp-chip { background: rgba(212,168,83,0.12); border: 1px solid rgba(212,168,83,0.3); border-radius: 20px; padding: 0.3rem 0.75rem; font-family: var(--mono); font-size: 0.7rem; color: var(--accent); display: flex; align-items: center; gap: 0.4rem; }
+  .user-menu { position: relative; }
+  .user-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem 0.9rem; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 0.4rem; }
+  .user-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .user-dropdown { position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; min-width: 160px; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.4); overflow: hidden; display: none; }
+  .user-dropdown.open { display: block; }
+  .udrop-item { padding: 0.7rem 1rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); cursor: pointer; transition: all 0.12s; border-bottom: 1px solid var(--border); }
+  .udrop-item:last-child { border-bottom: none; }
+  .udrop-item:hover { background: var(--surface2); color: var(--text); }
+  .udrop-item.danger:hover { color: var(--red); }
+
+  main { max-width: 780px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* ── HOME ── */
+  .home-title { font-size: clamp(2rem, 6vw, 3.8rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-bottom: 0.4rem; }
+  .home-title span { color: var(--accent); }
+  .home-sub { color: var(--muted); font-family: var(--mono); font-size: 0.78rem; margin-bottom: 1.2rem; }
+
+  .xp-bar-wrap { margin-bottom: 2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1.2rem; }
+  .xp-bar-info { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .xp-bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #f0c060); border-radius: 3px; transition: width 0.5s ease; }
+
+  .matiere-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .tab-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.5rem 1.1rem;
+    font-family: var(--display); font-size: 0.82rem; font-weight: 700;
+    color: var(--muted); cursor: pointer; transition: all 0.15s;
+  }
+  .tab-btn:hover, .tab-btn.active { border-color: var(--accent); color: var(--accent); }
+  .tab-btn.active { background: rgba(212,168,83,0.08); }
+
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
+  .cat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.1rem 1.25rem; cursor: pointer;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .cat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); transform:scaleX(0); transition:transform 0.2s; transform-origin:left; }
+  .cat-card:hover { background: var(--surface2); border-color: var(--accent); transform: translateY(-2px); }
+  .cat-card:hover::before { transform: scaleX(1); }
+  .cat-card .mat-badge { font-family: var(--mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+  .cat-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; line-height: 1.3; }
+  .cat-card p { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+  .cat-card .cat-score { font-family: var(--mono); font-size: 0.62rem; margin-top: 0.4rem; }
+  .badge-hist { color: #6eb0e0; }
+  .badge-pse  { color: #e07a6e; }
+  .badge-eco  { color: #7acf94; }
+  .badge-fr   { color: #b07ae0; }
+  .badge-math { color: #f0a070; }
+  .badge-pc   { color: #70d0d0; }
+  .badge-info { color: #80d080; }
+  .badge-elec { color: #d0b050; }
+  .badge-cyber{ color: #e06090; }
+  .badge-ang  { color: #90c0f0; }
+  .badge-dnl  { color: #c090e0; }
+
+  .btn-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-all { background: var(--accent); color: #0f0f0f; border: none; border-radius: 8px; padding: 0.9rem 2.5rem; font-family: var(--display); font-size: 0.95rem; font-weight: 800; cursor: pointer; letter-spacing: -0.02em; transition: opacity 0.15s, transform 0.1s; }
+  .btn-all:hover { opacity: 0.9; }
+  .btn-all:active { transform: scale(0.98); }
+  .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem 1.5rem; font-family: var(--display); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+  .btn-secondary:hover { border-color: var(--text); }
+
+  /* ── QUIZ ── */
+  #quiz-screen { display: none; }
+  .progress-wrap { margin-bottom: 1.75rem; }
+  .progress-info { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .progress-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+  .q-tags { display: flex; gap: 0.5rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
+  .q-tag { display: inline-block; font-family: var(--mono); font-size: 0.65rem; padding: 3px 9px; border-radius: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .tag-hist  { color: #6eb0e0; border: 1px solid #6eb0e040; }
+  .tag-pse   { color: #e07a6e; border: 1px solid #e07a6e40; }
+  .tag-eco   { color: #7acf94; border: 1px solid #7acf9440; }
+  .tag-fr    { color: #b07ae0; border: 1px solid #b07ae040; }
+  .tag-math  { color: #f0a070; border: 1px solid #f0a07040; }
+  .tag-pc    { color: #70d0d0; border: 1px solid #70d0d040; }
+  .tag-info  { color: #80d080; border: 1px solid #80d08040; }
+  .tag-elec  { color: #d0b050; border: 1px solid #d0b05040; }
+  .tag-cyber { color: #e06090; border: 1px solid #e0609040; }
+  .tag-ang   { color: #90c0f0; border: 1px solid #90c0f040; }
+  .tag-dnl   { color: #c090e0; border: 1px solid #c090e040; }
+  .tag-theme { color: var(--accent); border: 1px solid var(--accent); }
+
+  .q-text { font-size: clamp(1.05rem, 3vw, 1.35rem); font-weight: 700; line-height: 1.45; letter-spacing: -0.02em; margin-bottom: 1.75rem; }
+  .choices { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.25rem; }
+  .choice { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1.2rem; cursor: pointer; font-family: var(--display); font-size: 0.9rem; font-weight: 400; color: var(--text); text-align: left; transition: all 0.15s; display: flex; align-items: center; gap: 1rem; }
+  .choice:hover:not(:disabled) { background: var(--surface2); border-color: #555; }
+  .choice-letter { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); min-width: 18px; font-weight: 500; }
+  .choice.correct { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+  .choice.correct .choice-letter { color: var(--green); }
+  .choice.wrong { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+  .choice.wrong .choice-letter { color: var(--red); }
+  .choice.reveal-correct { background: var(--green-bg); border-color: var(--green-border); color: var(--green); opacity: 0.55; }
+  .choice:disabled { cursor: default; }
+
+  .xp-toast { position: fixed; top: 80px; right: 20px; background: var(--surface); border: 1px solid var(--accent); border-radius: 10px; padding: 0.6rem 1rem; font-family: var(--mono); font-size: 0.75rem; color: var(--accent); z-index: 999; transform: translateX(200%); transition: transform 0.3s ease; }
+  .xp-toast.show { transform: translateX(0); }
+
+  .ai-hint { background: linear-gradient(135deg, rgba(212,168,83,0.05), rgba(192,144,224,0.05)); border: 1px solid rgba(212,168,83,0.2); border-radius: 10px; padding: 0.8rem 1rem; margin-bottom: 1rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); line-height: 1.6; display: none; }
+  .ai-hint-header { color: var(--accent); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+
+  .explication { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 0.9rem 1.2rem; font-size: 0.82rem; color: #c0bdb8; line-height: 1.7; margin-bottom: 1.25rem; display: none; font-family: var(--mono); }
+  .btn-next { background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 0.7rem 1.8rem; font-family: var(--display); font-size: 0.88rem; font-weight: 700; cursor: pointer; display: none; transition: all 0.15s; }
+  .btn-next:hover { background: var(--accent); color: #0f0f0f; }
+
+  .btn-back { background: transparent; border: none; color: var(--muted); font-family: var(--mono); font-size: 0.72rem; cursor: pointer; padding: 0; margin-bottom: 1.75rem; display: flex; align-items: center; gap: 0.5rem; transition: color 0.15s; }
+  .btn-back:hover { color: var(--text); }
+
+  /* ── SCORE ── */
+  #score-screen { display: none; text-align: center; padding: 3.5rem 0; }
+  #score-screen h2 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 800; letter-spacing: -0.05em; margin-bottom: 0.4rem; }
+  .score-pct { color: var(--accent); }
+  #score-screen > p { color: var(--muted); font-family: var(--mono); font-size: 0.78rem; margin-bottom: 2.5rem; }
+  .score-details { max-width: 460px; margin: 0 auto 2.5rem; text-align: left; }
+  .score-row { display: flex; justify-content: space-between; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; gap: 1rem; }
+  .score-row .sq { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 0.75rem; }
+  .score-row .sm { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); white-space: nowrap; }
+  .score-row .ok { color: var(--green); font-family: var(--mono); font-size: 0.72rem; white-space: nowrap; }
+  .score-row .ko { color: var(--red); font-family: var(--mono); font-size: 0.72rem; white-space: nowrap; }
+  .btn-grp { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  .xp-gained { display: inline-block; background: rgba(212,168,83,0.1); border: 1px solid rgba(212,168,83,0.3); border-radius: 20px; padding: 0.4rem 1.2rem; font-family: var(--mono); font-size: 0.8rem; color: var(--accent); margin-bottom: 1.5rem; }
+
+  .chart-tabs { display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:center; }
+  .ctab { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:0.4rem 1rem; font-family:var(--mono); font-size:0.72rem; color:var(--muted); cursor:pointer; transition:all 0.15s; }
+  .ctab:hover,.ctab.active { border-color:var(--accent); color:var(--accent); background:rgba(212,168,83,0.08); }
+  #chart-panel { animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── ADMIN ── */
+  #admin-screen { display: none; }
+  .admin-title { font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 0.5rem; }
+  .admin-title span { color: var(--accent); }
+  .admin-sub { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 2rem; }
+  .admin-stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
+  .admin-stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.2rem; }
+  .admin-stat-card .asc-label { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+  .admin-stat-card .asc-val { font-size: 1.6rem; font-weight: 800; color: var(--accent); letter-spacing: -0.04em; }
+  .users-table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+  .users-table th { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); text-align: left; }
+  .users-table td { padding: 0.75rem 0.8rem; border-bottom: 1px solid var(--border); font-size: 0.82rem; font-family: var(--mono); }
+  .users-table tr:hover td { background: var(--surface2); }
+  .pct-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .pct-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+  .admin-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .admin-btn { background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 0.3rem 0.7rem; font-family: var(--mono); font-size: 0.68rem; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+  .admin-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .admin-btn.danger:hover { border-color: var(--red); color: var(--red); }
+  .admin-btn.xp-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(212,168,83,0.1); }
+  .backup-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem 1.2rem; margin-bottom: 1.5rem; }
+  .backup-info { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+  .backup-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .backup-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 0.45rem 1rem; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 0.4rem; }
+  .export-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .import-btn:hover { border-color: var(--green-border); color: var(--green); }
+  .backup-msg-ok  { background: var(--green-bg);  border: 1px solid var(--green-border); border-radius: 8px; padding: 0.55rem 1rem; font-family: var(--mono); font-size: 0.73rem; color: var(--green);  margin-bottom: 1rem; }
+  .backup-msg-err { background: var(--red-bg);    border: 1px solid var(--red-border);   border-radius: 8px; padding: 0.55rem 1rem; font-family: var(--mono); font-size: 0.73rem; color: var(--red);    margin-bottom: 1rem; }
+  .xp-preset { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.3rem 0.7rem; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+  .xp-preset:hover { border-color: var(--accent); color: var(--accent); }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 500; display: none; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; width: 100%; max-width: 380px; }
+  .modal h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.2rem; }
+  .modal-field { margin-bottom: 1rem; }
+  .modal-field label { display: block; font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-bottom: 0.3rem; text-transform: uppercase; }
+  .modal-field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.9rem; color: var(--text); font-family: var(--mono); font-size: 0.85rem; outline: none; }
+  .modal-field input:focus { border-color: var(--accent); }
+  .modal-btns { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.2rem; }
+  .modal-cancel { background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 1.2rem; color: var(--muted); font-family: var(--display); font-size: 0.85rem; cursor: pointer; }
+  .modal-ok { background: var(--accent); border: none; border-radius: 8px; padding: 0.6rem 1.2rem; color: #0f0f0f; font-family: var(--display); font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+
+  /* Niveaux */
+  .level-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(212,168,83,0.1); border: 1px solid rgba(212,168,83,0.25); border-radius: 20px; padding: 0.25rem 0.75rem; font-family: var(--mono); font-size: 0.68rem; color: var(--accent); }
+
+  /* ── STREAK ── */
+  .streak-bar { display: flex; align-items: center; gap: 0.6rem; background: rgba(212,168,83,0.06); border: 1px solid rgba(212,168,83,0.2); border-radius: 10px; padding: 0.6rem 1rem; margin-bottom: 1.2rem; font-family: var(--mono); font-size: 0.75rem; }
+  .streak-fire { font-size: 1.3rem; animation: pulse 0.6s ease infinite alternate; }
+  @keyframes pulse { from{transform:scale(1)} to{transform:scale(1.2)} }
+  .streak-label { color: var(--muted); }
+  .streak-count { color: var(--accent); font-weight: 700; font-size: 1rem; }
+  .streak-best { color: var(--muted); margin-left: auto; }
+
+  /* ── LEADERBOARD ── */
+  #leaderboard-screen { display: none; }
+  .lb-title { font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 0.3rem; }
+  .lb-title span { color: var(--accent); }
+  .lb-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .lb-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .lb-tab { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.45rem 1rem; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+  .lb-tab.active, .lb-tab:hover { border-color: var(--accent); color: var(--accent); background: rgba(212,168,83,0.08); }
+  .lb-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .lb-row { display: flex; align-items: center; gap: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem 1.1rem; transition: background 0.15s; }
+  .lb-row.me { border-color: var(--accent); background: rgba(212,168,83,0.06); }
+  .lb-rank { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); min-width: 28px; text-align: center; font-weight: 700; }
+  .lb-rank.gold   { color: #FFD700; font-size: 1rem; }
+  .lb-rank.silver { color: #C0C0C0; font-size: 1rem; }
+  .lb-rank.bronze { color: #CD7F32; font-size: 1rem; }
+  .lb-name { flex: 1; font-weight: 700; font-size: 0.9rem; }
+  .lb-name small { display: block; font-family: var(--mono); font-size: 0.65rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .lb-val { font-family: var(--mono); font-size: 0.85rem; color: var(--accent); font-weight: 700; text-align: right; }
+  .lb-val small { display: block; font-size: 0.65rem; color: var(--muted); font-weight: 400; }
+  .lb-empty { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
+
+  @media(max-width:600px) {
+    header { padding: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+    .stats-bar { gap: 0.8rem; }
+    main { padding: 1.25rem 1rem; }
+    .users-table { font-size: 0.72rem; }
+    .admin-actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">BAC<span>PRO</span></div>
+    <div class="login-sub">Révise malin · Progresse vite</div>
+    <div class="login-tabs">
+      <button class="ltab active" id="lt-login" onclick="switchLoginTab('login')">Connexion</button>
+      <button class="ltab" id="lt-register" onclick="switchLoginTab('register')">Créer un compte</button>
+    </div>
+    <div id="login-form">
+      <div class="login-field"><label>Identifiant</label><input type="text" id="li-user" placeholder="Ton pseudo" autocomplete="username"></div>
+      <div class="login-field"><label>Mot de passe</label><input type="password" id="li-pass" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn-login" onclick="doLogin()">Se connecter →</button>
+      <div class="login-err" id="login-err"></div>
+    </div>
+    <div id="register-form" style="display:none">
+      <div class="login-field"><label>Identifiant</label><input type="text" id="reg-user" placeholder="Choisis un pseudo"></div>
+      <div class="login-field"><label>Mot de passe</label><input type="password" id="reg-pass" placeholder="Min. 6 caractères"></div>
+      <div class="login-field"><label>Confirmer le mot de passe</label><input type="password" id="reg-pass2" placeholder="Répète ton mot de passe"></div>
+      <button class="btn-login" onclick="doRegister()">Créer mon compte →</button>
+      <div class="login-err" id="register-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+<header>
+  <div class="logo">BAC<span>PRO</span></div>
+  <div class="header-right">
+    <div class="stats-bar">
+      <div class="stat"><strong id="h-q">0</strong>rép.</div>
+      <div class="stat green"><strong id="h-ok">0</strong>✓</div>
+      <div class="stat red"><strong id="h-ko">0</strong>✗</div>
+      <div class="stat"><strong id="h-pct">—</strong>score</div>
+    </div>
+    <div class="xp-chip" id="xp-chip">⚡ <span id="xp-display">0 XP</span></div>
+    <div class="user-menu">
+      <button class="user-btn" id="user-btn-el" onclick="toggleUserMenu()">👤 <span id="user-display-name">—</span> ▾</button>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="udrop-item" onclick="showAdmin()" id="admin-menu-item" style="display:none">🛡 Admin</div>
+        <div class="udrop-item" onclick="showLeaderboard()">🏆 Classement</div>
+        <div class="udrop-item" onclick="showHome()">🏠 Accueil</div>
+        <div class="udrop-item danger" onclick="doLogout()">🚪 Déconnexion</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <div id="home-screen">
+    <div class="home-title">Révise ton<br><span>bac pro</span></div>
+    <div class="home-sub" id="total-count"></div>
+
+    <div class="xp-bar-wrap">
+      <div class="xp-bar-info">
+        <span id="level-label">Niveau 1 — Débutant</span>
+        <span id="xp-next-label">0 / 100 XP</span>
+      </div>
+      <div class="xp-bar-track"><div class="xp-bar-fill" id="xp-bar-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="streak-bar" id="streak-bar" style="display:none">
+      <span class="streak-fire">🔥</span>
+      <span class="streak-label">Série de quiz parfaits :</span>
+      <span class="streak-count" id="streak-count">0</span>
+      <span class="streak-best" id="streak-best"></span>
+    </div>
+
+    <div class="matiere-tabs" id="matiere-tabs"></div>
+    <div class="cat-grid" id="cat-grid"></div>
+    <div class="btn-row">
+      <button class="btn-all" onclick="startQuiz('__all__','__all__')">🚀 Tout réviser</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz-screen">
+    <button class="btn-back" onclick="showHome()">← Retour</button>
+    <div class="progress-wrap">
+      <div class="progress-info"><span id="q-counter">1/10</span><span id="q-info"></span></div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="q-tags" id="q-tags"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="ai-hint" id="ai-hint"><div class="ai-hint-header">🧠 Indice IA</div><div id="ai-hint-text"></div></div>
+    <div class="choices" id="choices"></div>
+    <div class="explication" id="explication"></div>
+    <button class="btn-next" id="btn-next" onclick="nextQ()">Question suivante →</button>
+  </div>
+
+  <!-- SCORE -->
+  <div id="score-screen">
+    <h2><span class="score-pct" id="sc-pct"></span></h2>
+    <p id="sc-msg"></p>
+    <div class="xp-gained" id="xp-gained-display"></div>
+    <div class="score-details" id="sc-details"></div>
+    <div class="btn-grp">
+      <button class="btn-secondary" onclick="showHome()">Choisir un thème</button>
+      <button class="btn-secondary" id="btn-chart" onclick="toggleChart()">📊 Voir les stats</button>
+      <button class="btn-all" onclick="restartQuiz()">Recommencer</button>
+    </div>
+    <div id="chart-panel" style="display:none;margin-top:2.5rem;">
+      <div class="chart-tabs" id="chart-tabs">
+        <button class="ctab active" onclick="switchChart('bar',this)">Par thème</button>
+        <button class="ctab" onclick="switchChart('mat',this)">Par matière</button>
+        <button class="ctab" onclick="switchChart('line',this)">Progression</button>
+        <button class="ctab" onclick="switchChart('radar',this)">Radar</button>
+      </div>
+      <div style="position:relative;width:100%;max-width:620px;margin:1.5rem auto 0;">
+        <canvas id="myChart" height="320"></canvas>
+      </div>
+      <div id="chart-legend" style="margin-top:1rem;display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;font-family:var(--mono);font-size:0.7rem;color:var(--muted);"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="admin-screen">
+    <button class="btn-back" onclick="showHome()">← Retour</button>
+    <div class="admin-title">Panneau <span>Admin</span></div>
+    <div class="admin-sub">Vision globale de tous les comptes utilisateurs</div>
+    <div class="backup-bar">
+      <div class="backup-info">💾 Sauvegarde des comptes</div>
+      <div class="backup-actions">
+        <button class="backup-btn export-btn" onclick="exportBackup()">⬇ Exporter (.json)</button>
+        <label class="backup-btn import-btn">⬆ Importer (.json)<input type="file" id="import-file" accept=".json" onchange="importBackup(event)" style="display:none"></label>
+      </div>
+    </div>
+    <div id="backup-msg" style="display:none"></div>
+    <div class="admin-stats-grid" id="admin-stats-grid"></div>
+    <table class="users-table" id="users-table">
+      <thead>
+        <tr>
+          <th>Utilisateur</th>
+          <th>Niveau / XP</th>
+          <th>Réussite</th>
+          <th>Questions</th>
+          <th>Streak</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="users-tbody"></tbody>
+    </table>
+  </div>
+  <!-- LEADERBOARD -->
+  <div id="leaderboard-screen">
+    <button class="btn-back" onclick="showHome()">← Retour</button>
+    <div class="lb-title">🏆 <span>Classement</span></div>
+    <div class="lb-sub">Comparaison entre tous les joueurs inscrits</div>
+    <div class="lb-tabs">
+      <button class="lb-tab active" onclick="renderLeaderboard('xp',this)">⚡ XP</button>
+      <button class="lb-tab" onclick="renderLeaderboard('streak',this)">🔥 Streak</button>
+      <button class="lb-tab" onclick="renderLeaderboard('pct',this)">🎯 % Réussite</button>
+      <button class="lb-tab" onclick="renderLeaderboard('ans',this)">📝 Questions</button>
+    </div>
+    <div class="lb-list" id="lb-list"></div>
+  </div>
+</main>
+</div>
+
+<!-- TOAST XP -->
+<div class="xp-toast" id="xp-toast"></div>
+
+<!-- MODAL EDIT USER -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3>✏️ Modifier l'utilisateur</h3>
+    <input type="hidden" id="edit-target">
+    <div class="modal-field"><label>Nouvel identifiant</label><input type="text" id="edit-login"></div>
+    <div class="modal-field"><label>Nouveau mot de passe (laisser vide = inchangé)</label><input type="password" id="edit-pass"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal('edit-modal')">Annuler</button>
+      <button class="modal-ok" onclick="saveEditUser()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESET CONFIRM -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal">
+    <h3>🔄 Réinitialiser les stats ?</h3>
+    <p style="font-family:var(--mono);font-size:0.78rem;color:var(--muted);margin:0.5rem 0 1rem">Les scores et XP de cet utilisateur seront remis à zéro. Irréversible.</p>
+    <input type="hidden" id="reset-target">
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal('reset-modal')">Annuler</button>
+      <button class="modal-ok" style="background:var(--red)" onclick="doResetStats()">Réinitialiser</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GIVE XP -->
+<div class="modal-overlay" id="givexp-modal">
+  <div class="modal">
+    <h3>⚡ Donner de l'XP</h3>
+    <p style="font-family:var(--mono);font-size:0.75rem;color:var(--muted);margin:0 0 1rem">Ajouter ou retirer de l'XP à <strong id="givexp-target-label" style="color:var(--accent)"></strong></p>
+    <input type="hidden" id="givexp-target">
+    <div class="modal-field">
+      <label>Montant XP (négatif pour retirer)</label>
+      <input type="number" id="givexp-amount" placeholder="ex: 500 ou -100" step="10">
+    </div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="xp-preset" onclick="setXpPreset(50)">+50</button>
+      <button class="xp-preset" onclick="setXpPreset(100)">+100</button>
+      <button class="xp-preset" onclick="setXpPreset(250)">+250</button>
+      <button class="xp-preset" onclick="setXpPreset(500)">+500</button>
+      <button class="xp-preset" onclick="setXpPreset(1000)">+1000</button>
+      <button class="xp-preset" style="color:var(--red);border-color:var(--red-border)" onclick="setXpPreset(-100)">-100</button>
+    </div>
+    <div id="givexp-preview" style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;min-height:1.2em"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal('givexp-modal')">Annuler</button>
+      <button class="modal-ok" onclick="doGiveXp()">⚡ Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ════════════════════════════════════════
+// STORAGE (localStorage + fallback mémoire)
+// ════════════════════════════════════════
+const ADMIN_LOGIN = 'Souper33';
+const ADMIN_PASS  = 'password0201';
+const STORE_KEY   = 'bacpro_users_v2';
+
+// Fallback in-memory si localStorage indisponible
+let _memStore = {};
+let _useLocalStorage = true;
+try { localStorage.setItem('__test__', '1'); localStorage.removeItem('__test__'); }
+catch(e) { _useLocalStorage = false; }
+
+function loadStore() {
+  if (!_useLocalStorage) return _memStore;
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); }
+  catch(e) { return _memStore; }
+}
+function saveStore(data) {
+  _memStore = data;
+  if (!_useLocalStorage) return;
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+function getUser(login) { return loadStore()[login] || null; }
+function saveUser(login, data) {
+  const store = loadStore();
+  store[login] = data;
+  saveStore(store);
+}
+function getAllUsers() { return loadStore(); }
+
+function createUser(login, pass) {
+  if (getUser(login)) return false;
+  saveUser(login, {
+    pass: pass,
+    xp: 0,
+    totalAns: 0,
+    totalOk: 0,
+    totalKo: 0,
+    matStats: {},
+    winStreak: 0,
+    bestStreak: 0
+  });
+  return true;
+}
+
+// XP / LEVELS
+const LEVELS = [
+  {name:"Débutant",min:0}, {name:"Apprenti",min:100}, {name:"Studieux",min:300},
+  {name:"Confirmé",min:600}, {name:"Expert",min:1000}, {name:"Maître",min:1500},
+  {name:"As du Bac",min:2200}, {name:"Légende",min:3000}
+];
+function getLevel(xp) {
+  let lv = 0;
+  for (let i = 0; i < LEVELS.length; i++) { if (xp >= LEVELS[i].min) lv = i; }
+  return lv;
+}
+function getLevelInfo(xp) {
+  const lv = getLevel(xp);
+  const cur = LEVELS[lv];
+  const next = LEVELS[lv+1] || null;
+  return { lv: lv+1, name: cur.name, progress: next ? (xp - cur.min) : 0, needed: next ? (next.min - cur.min) : 1 };
+}
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let currentUser = null;
+let pool=[], idx=0, answered=false;
+let totalOk=0, totalKo=0, totalAns=0;
+let results=[];
+let lastM='__all__', lastT='__all__';
+let quizXpGained = 0;
+let currentStreak = 0; // streak en cours dans le quiz
+
+// ════════════════════════════════════════
+// LOGIN / AUTH
+// ════════════════════════════════════════
+function switchLoginTab(tab) {
+  document.getElementById('lt-login').classList.toggle('active', tab==='login');
+  document.getElementById('lt-register').classList.toggle('active', tab==='register');
+  document.getElementById('login-form').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('register-form').style.display = tab==='register' ? 'block' : 'none';
+}
+
+function doLogin() {
+  const login = document.getElementById('li-user').value.trim();
+  const pass  = document.getElementById('li-pass').value;
+  const err   = document.getElementById('login-err');
+  err.style.display='none';
+  if (!login || !pass) { err.textContent='Remplis tous les champs.'; err.style.display='block'; return; }
+  // Admin check
+  if (login === ADMIN_LOGIN && pass.toLowerCase() === ADMIN_PASS.toLowerCase()) {
+    startSession(login, true);
+    return;
+  }
+  const u = getUser(login);
+  if (!u) { err.textContent='Identifiant introuvable.'; err.style.display='block'; return; }
+  if (u.pass !== pass) { err.textContent='Mot de passe incorrect.'; err.style.display='block'; return; }
+  startSession(login, false);
+}
+
+function doRegister() {
+  const login = document.getElementById('reg-user').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  const err   = document.getElementById('register-err');
+  err.style.display='none';
+  if (!login || !pass) { err.textContent='Remplis tous les champs.'; err.style.display='block'; return; }
+  if (login === ADMIN_LOGIN) { err.textContent='Cet identifiant est réservé.'; err.style.display='block'; return; }
+  if (pass.length < 6) { err.textContent='Mot de passe trop court (6 caractères min).'; err.style.display='block'; return; }
+  if (pass !== pass2) { err.textContent='Les mots de passe ne correspondent pas.'; err.style.display='block'; return; }
+  if (!createUser(login, pass)) { err.textContent='Cet identifiant existe déjà.'; err.style.display='block'; return; }
+  startSession(login, false);
+}
+
+function startSession(login, isAdmin) {
+  currentUser = { login, isAdmin };
+  // S'assurer que même l'admin a un profil joueur dans le store
+  if (!getUser(login)) {
+    saveUser(login, { pass: ADMIN_PASS, xp:0, totalAns:0, totalOk:0, totalKo:0, matStats:{}, winStreak:0, bestWinStreak:0, bestStreak:0 });
+  }
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('user-display-name').textContent = login;
+  document.getElementById('admin-menu-item').style.display = isAdmin ? 'block' : 'none';
+  initSession();
+  buildHome();
+  showHome();
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('li-user').value='';
+  document.getElementById('li-pass').value='';
+  document.getElementById('login-err').style.display='none';
+  // reset runtime stats
+  totalOk=0; totalKo=0; totalAns=0; results=[];
+  updateHeader();
+}
+
+function toggleUserMenu() {
+  document.getElementById('user-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const menu = document.getElementById('user-menu') || document.querySelector('.user-menu');
+  if (menu && !menu.contains(e.target)) {
+    document.getElementById('user-dropdown').classList.remove('open');
+  }
+});
+
+function initSession() {
+  const u = getUser(currentUser.login);
+  if (!u) return;
+  totalAns = u.totalAns || 0;
+  totalOk  = u.totalOk  || 0;
+  totalKo  = u.totalKo  || 0;
+  updateHeader();
+  updateXpDisplay(u.xp || 0);
+}
+
+function persistSessionStats(xpDelta) {
+  let u = getUser(currentUser.login);
+  if (!u) return;
+
+  // Additionner les stats de CE quiz aux stats cumulées
+  const sessionOk  = results.filter(r=>r.ok).length;
+  const sessionKo  = results.filter(r=>!r.ok).length;
+  const sessionAns = results.length;
+
+  u.totalAns = (u.totalAns || 0) + sessionAns;
+  u.totalOk  = (u.totalOk  || 0) + sessionOk;
+  u.totalKo  = (u.totalKo  || 0) + sessionKo;
+
+  // XP : addition simple et directe
+  const oldXp = u.xp || 0;
+  const newXp = oldXp + xpDelta;
+  u.xp = newXp;
+
+  // Streak quiz parfait
+  const allOk = sessionOk === sessionAns;
+  if (allOk) {
+    u.winStreak = (u.winStreak || 0) + 1;
+    if (u.winStreak > (u.bestWinStreak || 0)) u.bestWinStreak = u.winStreak;
+  } else {
+    u.winStreak = 0;
+  }
+  if (currentStreak > (u.bestStreak || 0)) u.bestStreak = currentStreak;
+
+  // Stats par matière
+  if (!u.matStats) u.matStats = {};
+  results.forEach(r => {
+    if (!u.matStats[r.m]) u.matStats[r.m] = {ok:0, ko:0};
+    r.ok ? u.matStats[r.m].ok++ : u.matStats[r.m].ko++;
+  });
+
+  // Sauvegarde
+  saveUser(currentUser.login, u);
+
+  // Sync variables globales de session
+  totalAns = u.totalAns;
+  totalOk  = u.totalOk;
+  totalKo  = u.totalKo;
+
+  updateHeader();
+  updateXpDisplay(newXp);
+}
+
+function updateXpDisplay(xp) {
+  const info = getLevelInfo(xp);
+  document.getElementById('xp-display').textContent = xp + ' XP';
+  document.getElementById('level-label').textContent = `Niveau ${info.lv} — ${info.name}`;
+  document.getElementById('xp-next-label').textContent = `${info.progress} / ${info.needed} XP`;
+  document.getElementById('xp-bar-fill').style.width = Math.min(100, Math.round(info.progress/info.needed*100)) + '%';
+}
+
+function showXpToast(msg) {
+  const t = document.getElementById('xp-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ════════════════════════════════════════
+// MATIERES
+// ════════════════════════════════════════
+const MATIERES = {
+  hist:  { label: "Histoire",          badge: "badge-hist", tag: "tag-hist"  },
+  pse:   { label: "PSE",               badge: "badge-pse",  tag: "tag-pse"   },
+  eco:   { label: "Éco-Gestion",       badge: "badge-eco",  tag: "tag-eco"   },
+  fr:    { label: "Français",          badge: "badge-fr",   tag: "tag-fr"    },
+  math:  { label: "Mathématiques",     badge: "badge-math", tag: "tag-math"  },
+  pc:    { label: "Physique-Chimie",   badge: "badge-pc",   tag: "tag-pc"    },
+  info:  { label: "Info & Réseaux",    badge: "badge-info", tag: "tag-info"  },
+  elec:  { label: "Électronique",      badge: "badge-elec", tag: "tag-elec"  },
+  cyber: { label: "Cybersécurité",     badge: "badge-cyber",tag: "tag-cyber" },
+  ang:   { label: "Anglais",           badge: "badge-ang",  tag: "tag-ang"   },
+  dnl:   { label: "DNL",               badge: "badge-dnl",  tag: "tag-dnl"   },
+};
+
+const MAT_COLORS = {
+  hist:  {ok:'rgba(110,176,224,0.85)',ko:'rgba(110,176,224,0.3)',line:'#6eb0e0'},
+  pse:   {ok:'rgba(224,122,110,0.85)',ko:'rgba(224,122,110,0.3)',line:'#e07a6e'},
+  eco:   {ok:'rgba(122,207,148,0.85)',ko:'rgba(122,207,148,0.3)',line:'#7acf94'},
+  fr:    {ok:'rgba(176,122,224,0.85)',ko:'rgba(176,122,224,0.3)',line:'#b07ae0'},
+  math:  {ok:'rgba(240,160,112,0.85)',ko:'rgba(240,160,112,0.3)',line:'#f0a070'},
+  pc:    {ok:'rgba(112,208,208,0.85)',ko:'rgba(112,208,208,0.3)',line:'#70d0d0'},
+  info:  {ok:'rgba(128,208,128,0.85)',ko:'rgba(128,208,128,0.3)',line:'#80d080'},
+  elec:  {ok:'rgba(208,176,80,0.85)', ko:'rgba(208,176,80,0.3)', line:'#d0b050'},
+  cyber: {ok:'rgba(224,96,144,0.85)', ko:'rgba(224,96,144,0.3)', line:'#e06090'},
+  ang:   {ok:'rgba(144,192,240,0.85)',ko:'rgba(144,192,240,0.3)',line:'#90c0f0'},
+  dnl:   {ok:'rgba(192,144,224,0.85)',ko:'rgba(192,144,224,0.3)',line:'#c090e0'},
+};
+
+// ════════════════════════════════════════
+// QUESTIONS
+// ════════════════════════════════════════
+const Q = [
+// ════════ HISTOIRE ════════
+{m:"hist",t:"Guerre 14-18",q:"En quelle année débute la Première Guerre mondiale ?",c:["1912","1914","1916","1918"],a:1,e:"La guerre commence le 28 juillet 1914 avec la déclaration de guerre de l'Autriche-Hongrie à la Serbie."},
+{m:"hist",t:"Guerre 14-18",q:"Qu'est-ce que l'Union sacrée (1914) ?",c:["Une alliance franco-britannique","Le rassemblement de tous les partis politiques derrière l'effort de guerre","Un traité secret avec la Russie","La mobilisation des femmes"],a:1,e:"L'Union sacrée suspend les luttes politiques : tous les partis soutiennent le gouvernement face à l'ennemi."},
+{m:"hist",t:"Guerre 14-18",q:"Qu'est-ce que la guerre de tranchées ?",c:["Une stratégie d'attaque rapide","Une guerre navale","Un conflit de positions fixes sur de longs fronts fortifiés","Des batailles de chars"],a:2,e:"La guerre de tranchées désigne le front immobile de 1914-1918 : deux lignes de tranchées face à face."},
+{m:"hist",t:"Guerre 14-18",q:"Quelle est la date de l'armistice de la Première Guerre mondiale ?",c:["11 novembre 1918","8 mai 1918","28 juin 1919","22 juin 1940"],a:0,e:"L'armistice est signé le 11 novembre 1918 à 11h dans un wagon à Rethondes."},
+{m:"hist",t:"Guerre 14-18",q:"Quel traité conclut officiellement la Première Guerre mondiale ?",c:["Traité de Versailles","Traité de Paris","Traité de Francfort","Traité de Trianon"],a:0,e:"Le traité de Versailles (28 juin 1919) impose à l'Allemagne les conditions de paix."},
+{m:"hist",t:"Guerre 14-18",q:"Les États-Unis entrent en guerre en :",c:["1914","1915","1917","1918"],a:2,e:"Les États-Unis entrent en guerre en avril 1917 après la guerre sous-marine à outrance de l'Allemagne."},
+{m:"hist",t:"Guerre 14-18",q:"Qu'est-ce que le génocide arménien (1915) ?",c:["Une guerre entre l'Arménie et la Russie","L'extermination organisée des Arméniens par l'Empire ottoman","Une révolte nationale","Une famine naturelle"],a:1,e:"Le génocide arménien est le massacre et la déportation systématique des Arméniens par le gouvernement ottoman."},
+{m:"hist",t:"Guerre 14-18",q:"Quel rôle jouent les femmes pendant la Première Guerre mondiale ?",c:["Elles sont évacuées","Elles prennent en charge usines, commerces et exploitations agricoles","Elles servent uniquement comme infirmières","Elles fuient dans les colonies"],a:1,e:"Les 'munitionnettes' travaillent dans les usines d'armement et occupent tous les secteurs économiques."},
+{m:"hist",t:"Entre-deux-guerres",q:"La crise économique mondiale de 1929 commence par :",c:["La faillite de banques françaises","Le krach boursier de Wall Street","Une grève générale en Angleterre","La dévaluation du franc"],a:1,e:"Le jeudi noir (24 oct. 1929) : l'effondrement de la Bourse de New York déclenche une crise mondiale."},
+{m:"hist",t:"Entre-deux-guerres",q:"Hitler devient chancelier d'Allemagne en :",c:["1929","1931","1933","1936"],a:2,e:"Adolf Hitler est nommé chancelier le 30 janvier 1933. La loi des pleins pouvoirs de mars 1933 instaure la dictature nazie."},
+{m:"hist",t:"Entre-deux-guerres",q:"Le Front populaire arrive au pouvoir en France en :",c:["1934","1936","1938","1940"],a:1,e:"Le Front populaire remporte les élections de mai 1936. Léon Blum devient président du Conseil."},
+{m:"hist",t:"Entre-deux-guerres",q:"Quelle mesure sociale majeure le Front populaire obtient-il en 1936 ?",c:["Le droit de vote des femmes","Les congés payés et la semaine de 40h","La nationalisation des banques","La retraite à 60 ans"],a:1,e:"Les accords Matignon (juin 1936) accordent deux semaines de congés payés et la semaine de 40h."},
+{m:"hist",t:"Entre-deux-guerres",q:"Les lois de Nuremberg (1935) sont :",c:["Des lois de réarmement","Des lois antisémites privant les Juifs de la citoyenneté","Des accords économiques","Des lois sur la censure"],a:1,e:"Les lois de Nuremberg retirent la nationalité allemande aux Juifs et interdisent les mariages mixtes."},
+{m:"hist",t:"Entre-deux-guerres",q:"L'Anschluss (mars 1938) est :",c:["L'alliance germano-italienne","L'annexion de l'Autriche par l'Allemagne nazie","L'annexion de la Tchécoslovaquie","L'invasion de la Pologne"],a:1,e:"L'Anschluss est l'annexion de l'Autriche par l'Allemagne nazie le 13 mars 1938."},
+{m:"hist",t:"Seconde Guerre mondiale",q:"Que se passe-t-il le 18 juin 1940 ?",c:["La signature de l'armistice","L'appel du général de Gaulle depuis Londres","Le débarquement allié","L'entrée des Allemands à Paris"],a:1,e:"Le 18 juin 1940, depuis la BBC à Londres, le général de Gaulle appelle les Français à continuer le combat."},
+{m:"hist",t:"Seconde Guerre mondiale",q:"Qui dirige le régime de Vichy ?",c:["Le général Weygand","Le général de Gaulle","Le maréchal Pétain","Pierre Laval"],a:2,e:"Le maréchal Pétain reçoit les pleins pouvoirs le 10 juillet 1940 et instaure l'État français à Vichy."},
+{m:"hist",t:"Seconde Guerre mondiale",q:"Le débarquement allié en Normandie a lieu le :",c:["6 juin 1943","6 juin 1944","8 mai 1944","12 août 1944"],a:1,e:"Le Jour J (D-Day) le 6 juin 1944 : les Alliés débarquent sur les plages de Normandie."},
+{m:"hist",t:"Seconde Guerre mondiale",q:"La Shoah désigne :",c:["Des bombardements","L'extermination systématique des Juifs d'Europe par les nazis","La déportation des opposants politiques","Des crimes de guerre japonais"],a:1,e:"La Shoah est le génocide des Juifs d'Europe : environ 6 millions assassinés entre 1941 et 1945."},
+{m:"hist",t:"Seconde Guerre mondiale",q:"La capitulation de l'Allemagne est signée le :",c:["30 avril 1945","8 mai 1945","2 septembre 1945","6 août 1945"],a:1,e:"L'Allemagne capitule sans conditions le 8 mai 1945."},
+{m:"hist",t:"Guerre froide",q:"La guerre froide oppose principalement :",c:["La France et l'Allemagne","Le Royaume-Uni et l'URSS","Les États-Unis et l'URSS","L'OTAN et la Chine"],a:2,e:"La guerre froide (1947-1991) est la rivalité entre les États-Unis (capitalisme) et l'URSS (communisme)."},
+{m:"hist",t:"Guerre froide",q:"L'OTAN est créée en :",c:["1945","1947","1949","1955"],a:2,e:"L'Organisation du Traité de l'Atlantique Nord est fondée le 4 avril 1949."},
+{m:"hist",t:"Guerre froide",q:"Le mur de Berlin est construit en :",c:["1955","1958","1961","1963"],a:2,e:"Le mur de Berlin est érigé dans la nuit du 12 au 13 août 1961 par la RDA."},
+{m:"hist",t:"Guerre froide",q:"Le mur de Berlin tombe en :",c:["1987","1988","1989","1991"],a:2,e:"Le mur de Berlin tombe dans la nuit du 9 au 10 novembre 1989."},
+{m:"hist",t:"Guerre froide",q:"L'URSS se dissout en :",c:["1989","1990","1991","1992"],a:2,e:"L'URSS est officiellement dissoute le 25 décembre 1991."},
+{m:"hist",t:"Construction européenne",q:"Le traité de Rome (1957) crée :",c:["L'OTAN","La CEE","L'Union européenne","Le Conseil de l'Europe"],a:1,e:"Le traité de Rome du 25 mars 1957 crée la CEE entre 6 pays fondateurs."},
+{m:"hist",t:"Construction européenne",q:"Quel traité crée officiellement l'Union européenne ?",c:["Traité de Rome","Traité de Maastricht (1992)","Traité d'Amsterdam","Traité de Nice"],a:1,e:"Le traité de Maastricht (7 fév. 1992) crée l'Union européenne et prépare la monnaie unique."},
+{m:"hist",t:"France contemporaine",q:"La Ve République française est fondée en :",c:["1944","1946","1958","1962"],a:2,e:"La Ve République est instaurée par la Constitution du 4 octobre 1958."},
+{m:"hist",t:"France contemporaine",q:"En quelle année les femmes obtiennent-elles le droit de vote en France ?",c:["1936","1940","1944","1946"],a:2,e:"Le droit de vote est accordé aux femmes par l'ordonnance du 21 avril 1944."},
+{m:"hist",t:"France contemporaine",q:"L'abolition de la peine de mort en France a lieu en :",c:["1974","1977","1981","1985"],a:2,e:"La peine de mort est abolie par la loi du 9 octobre 1981 sous Mitterrand."},
+{m:"hist",t:"Relations internationales",q:"L'ONU est fondée en :",c:["1919","1939","1945","1948"],a:2,e:"L'ONU est fondée le 26 juin 1945 à San Francisco."},
+// ════════ PSE ════════
+{m:"pse",t:"Santé et hygiène",q:"Qu'est-ce que la santé selon l'OMS ?",c:["L'absence de maladie","Un état de complet bien-être physique, mental et social","La capacité à travailler","L'absence de handicap"],a:1,e:"Selon l'OMS (1946), la santé est un état de complet bien-être physique, mental et social."},
+{m:"pse",t:"Santé et hygiène",q:"Qu'est-ce qu'un agent pathogène ?",c:["Un médicament","Un micro-organisme capable de provoquer une maladie","Une substance toxique","Un virus bénin"],a:1,e:"Un agent pathogène est un micro-organisme (bactérie, virus, champignon) capable de provoquer une maladie."},
+{m:"pse",t:"Santé et hygiène",q:"La vaccination permet de :",c:["Guérir une maladie déjà déclarée","Protéger en apprenant à reconnaître un agent infectieux","Renforcer les antibiotiques","Éliminer définitivement un virus"],a:1,e:"La vaccination stimule le système immunitaire pour produire des anticorps spécifiques sans tomber malade."},
+{m:"pse",t:"Santé et hygiène",q:"La différence entre bactérie et virus est que :",c:["Les virus sont plus grands","Les bactéries sont des cellules vivantes, les virus ne le sont pas","Les bactéries ne peuvent pas être traitées","Les virus se soignent avec des antibiotiques"],a:1,e:"Les bactéries sont des organismes unicellulaires vivants (antibiotiques). Les virus ne sont pas des cellules (non sensibles aux antibiotiques)."},
+{m:"pse",t:"Santé et hygiène",q:"Qu'est-ce que le SIDA est causé par ?",c:["Une bactérie","Le VIH","Un champignon","Un parasite"],a:1,e:"Le SIDA est causé par le VIH qui détruit progressivement les défenses immunitaires."},
+{m:"pse",t:"Risques professionnels",q:"Qu'est-ce qu'un accident du travail ?",c:["Tout incident au travail","Un accident survenu par le fait ou à l'occasion du travail","Un accident volontaire","Un accident sur le trajet uniquement"],a:1,e:"L'accident du travail est tout accident survenu par le fait ou à l'occasion du travail (Art. L411-1 CSS)."},
+{m:"pse",t:"Risques professionnels",q:"La méthode QQOQCP sert à :",c:["Calculer les risques chimiques","Analyser une situation : Qui ? Quoi ? Où ? Quand ? Comment ? Pourquoi ?","Évaluer les EPI","Planifier les soins"],a:1,e:"La méthode QQOQCP est un outil d'analyse pour décrire et comprendre une situation."},
+{m:"pse",t:"Risques professionnels",q:"Les TMS sont causés principalement par :",c:["Des agents chimiques","Des gestes répétitifs, postures contraignantes et efforts excessifs","Des bruits","Des rayonnements"],a:1,e:"Les TMS sont des affections liées aux conditions de travail : gestes répétitifs, postures inadaptées, port de charges."},
+{m:"pse",t:"Environnement et développement durable",q:"Qu'est-ce que le développement durable ?",c:["La croissance sans limites","Un développement qui répond aux besoins du présent sans compromettre ceux des générations futures","La protection de l'environnement uniquement","La politique écologique des entreprises"],a:1,e:"Défini par le rapport Brundtland (1987), le développement durable concilie économie, social et environnement."},
+{m:"pse",t:"Environnement et développement durable",q:"Les trois piliers du développement durable sont :",c:["Économie, politique, culture","Économie, social, environnement","Industrie, agriculture, services","État, entreprises, syndicats"],a:1,e:"Le développement durable repose sur 3 piliers : économique, social et environnemental."},
+{m:"pse",t:"Secourisme",q:"Que signifie PLS ?",c:["Position Latérale de Sécurité","Premiers Lavages Sanitaires","Procédure de Liaison Secours","Position Libre Standardisée"],a:0,e:"La PLS permet de maintenir les voies aériennes dégagées d'une personne inconsciente qui respire."},
+{m:"pse",t:"Secourisme",q:"Face à un arrêt cardiaque, la première action est de :",c:["Donner à boire","Appeler le 15 et débuter les compressions thoraciques","Mettre en PLS","Attendre les secours"],a:1,e:"En cas d'arrêt cardiaque : alerter (15/18/112) et commencer les compressions thoraciques."},
+{m:"pse",t:"Secourisme",q:"Le numéro d'appel d'urgence européen est :",c:["15","17","18","112"],a:3,e:"Le 112 est joignable depuis tout téléphone dans tous les pays de l'UE, même sans crédit."},
+{m:"pse",t:"Nutrition et alimentation",q:"L'IMC (Indice de Masse Corporelle) se calcule :",c:["Poids × Taille","Poids (kg) / Taille² (m²)","Taille (cm) - 100","Poids (kg) / Taille (m)"],a:1,e:"L'IMC = poids (kg) / taille² (m²). Normal : 18,5 à 24,9."},
+{m:"pse",t:"Addictions",q:"Le tabac contient une substance addictive principale qui est :",c:["Le goudron","Le monoxyde de carbone","La nicotine","Le benzène"],a:2,e:"La nicotine est la substance addictive du tabac qui crée une dépendance physique et psychologique."},
+{m:"pse",t:"Vie sociale et citoyenneté",q:"Qu'est-ce que la discrimination ?",c:["Toute différence justifiée","Un traitement défavorable fondé sur un critère interdit","La préférence pour un candidat plus qualifié","Une sélection au mérite"],a:1,e:"La discrimination est un traitement défavorable fondé sur un critère interdit par la loi."},
+// ════════ ÉCO-GESTION ════════
+{m:"eco",t:"L'entreprise",q:"Qu'est-ce qu'une entreprise ?",c:["Une association à but non lucratif","Une unité économique qui produit des biens ou services en vue de réaliser un profit","Un organisme public","Un groupe de consommateurs"],a:1,e:"L'entreprise combine des facteurs de production pour produire des biens ou services vendus sur un marché."},
+{m:"eco",t:"L'entreprise",q:"Qu'est-ce qu'une PME ?",c:["Toute entreprise de moins de 500 salariés","Une entreprise de moins de 250 salariés et CA < 50 M€","Une entreprise publique","Une multinationale"],a:1,e:"La PME compte moins de 250 salariés et a un CA inférieur à 50 millions d'euros."},
+{m:"eco",t:"L'entreprise",q:"Qu'est-ce que le chiffre d'affaires (CA) ?",c:["Le bénéfice net","La somme des ventes de biens et services réalisées","Le capital social","Les charges"],a:1,e:"Le chiffre d'affaires = total des ventes (HT) réalisées sur une période. CA = Prix × Quantités."},
+{m:"eco",t:"L'entreprise",q:"Qu'est-ce que la valeur ajoutée ?",c:["Le prix de vente","La richesse créée = Production - Consommations intermédiaires","Le résultat net","Le salaire moyen"],a:1,e:"VA = production – consommations intermédiaires. Elle mesure la richesse créée par l'entreprise."},
+{m:"eco",t:"Les marchés",q:"La loi de l'offre et de la demande stipule que :",c:["Le prix est fixé par l'État","Quand la demande augmente et l'offre reste stable, le prix tend à augmenter","Le prix est toujours stable","L'offre détermine toujours le prix"],a:1,e:"Sur un marché concurrentiel : demande > offre → prix monte ; offre > demande → prix baisse."},
+{m:"eco",t:"Travail et emploi",q:"Qu'est-ce que le contrat de travail CDI ?",c:["Contrat à Durée Indéterminée : sans terme fixé","Contrat à Durée Individuelle","Contrat de Développement Industriel","Contrat de Droit Interne"],a:0,e:"Le CDI n'a pas de terme fixé et offre la plus grande stabilité au salarié."},
+{m:"eco",t:"Travail et emploi",q:"Qu'est-ce que le SMIC ?",c:["Le salaire moyen","Le Salaire Minimum Interprofessionnel de Croissance","Le salaire maximum légal","Le salaire des fonctionnaires"],a:1,e:"Le SMIC est le salaire horaire minimum légal en France, réévalué chaque année."},
+{m:"eco",t:"Travail et emploi",q:"Qu'est-ce que le taux de chômage ?",c:["La part des actifs ayant un emploi","La part des sans-emploi disponibles en recherche active dans la population active","Le nombre total de chômeurs","La part des inactifs"],a:1,e:"Taux de chômage = (chômeurs / population active) × 100."},
+{m:"eco",t:"Économie générale",q:"Qu'est-ce que l'inflation ?",c:["La baisse généralisée des prix","La hausse généralisée et durable des prix","La stabilité des prix","La baisse du chômage"],a:1,e:"L'inflation est la hausse continue des prix, mesurée par l'IPC. Elle réduit le pouvoir d'achat."},
+{m:"eco",t:"Économie générale",q:"Qu'est-ce que le PIB ?",c:["Le Pouvoir d'Achat des Ménages","Le Produit Intérieur Brut : richesse totale produite en un an","La dette publique","Le budget de l'État"],a:1,e:"Le PIB mesure la valeur de tous les biens et services produits sur le territoire national en un an."},
+{m:"eco",t:"Fiscalité et citoyenneté",q:"La TVA est :",c:["Un impôt direct payé par les entreprises uniquement","Un impôt indirect inclus dans le prix, collecté par les entreprises pour l'État","Un impôt sur le revenu","Une taxe locale"],a:1,e:"La TVA est un impôt indirect : les consommateurs la paient via les prix. Taux normal : 20%."},
+{m:"eco",t:"Consommation et protection",q:"Qu'est-ce que le droit de rétractation pour un achat en ligne ?",c:["Un droit de négocier","14 jours pour annuler sans motif ni pénalité","7 jours pour signaler un défaut","Le droit de retourner tout produit endommagé"],a:1,e:"Pour tout achat à distance, le consommateur dispose de 14 jours calendaires pour se rétracter."},
+// ════════ FRANÇAIS ════════
+{m:"fr",t:"Types et genres de textes",q:"Qu'est-ce qu'un texte argumentatif ?",c:["Un texte qui raconte","Un texte qui vise à convaincre en développant des arguments","Un texte descriptif","Un texte explicatif"],a:1,e:"Le texte argumentatif vise à défendre une thèse en utilisant arguments et exemples."},
+{m:"fr",t:"Types et genres de textes",q:"Qu'est-ce qu'un texte narratif ?",c:["Un texte descriptif","Un texte qui raconte des événements selon un schéma narratif","Un texte explicatif","Un texte comparatif"],a:1,e:"Le texte narratif raconte une histoire avec un schéma narratif (situation initiale, élément déclencheur, résolution...)."},
+{m:"fr",t:"Figures de style",q:"Qu'est-ce qu'une métaphore ?",c:["Une comparaison avec 'comme'","Une comparaison sans outil de comparaison","Une exagération","Une répétition de sons"],a:1,e:"La métaphore assimile directement deux réalités sans outil de comparaison. Ex : 'Achille est un lion'."},
+{m:"fr",t:"Figures de style",q:"Qu'est-ce qu'une hyperbole ?",c:["Une litote","Une exagération voulue pour frapper l'imagination","Une comparaison","Une métaphore inversée"],a:1,e:"L'hyperbole est une exagération volontaire. Ex : 'Je meurs de faim.'"},
+{m:"fr",t:"Figures de style",q:"Qu'est-ce qu'une anaphore ?",c:["Une figure de style sonore","La répétition d'un même mot ou groupe en début de phrases successives","Une comparaison implicite","Un euphémisme"],a:1,e:"L'anaphore est la répétition d'un mot/groupe en tête de phrases. Ex : 'Je suis venu, j'ai vu, j'ai vaincu.'"},
+{m:"fr",t:"Grammaire et expression",q:"La thèse dans un texte argumentatif est :",c:["La conclusion","Le point de vue défendu par l'auteur","L'ensemble des exemples","Le sujet posé"],a:1,e:"La thèse est l'opinion que l'auteur défend. Les arguments la justifient."},
+{m:"fr",t:"Orthographe et grammaire",q:"Qu'est-ce qu'un participe passé employé avec 'avoir' ?",c:["Il s'accorde avec le sujet","Il s'accorde avec le COD si placé avant le verbe","Il ne s'accorde jamais","Il s'accorde avec l'attribut"],a:1,e:"Avec 'avoir', le participe passé s'accorde avec le COD si ce COD est AVANT le verbe."},
+{m:"fr",t:"Orthographe et grammaire",q:"Qu'est-ce qu'une proposition subordonnée relative ?",c:["Une phrase indépendante","Une proposition introduite par un pronom relatif qui complète un nom","Une proposition causale","Une proposition principale"],a:1,e:"La subordonnée relative est introduite par un pronom relatif (qui, que, dont, où...)."},
+{m:"fr",t:"Littérature et auteurs",q:"Victor Hugo est l'auteur de :",c:["Madame Bovary","Les Misérables","Le Rouge et le Noir","Germinal"],a:1,e:"Victor Hugo (1802-1885) est l'auteur des Misérables (1862). Figure du romantisme."},
+{m:"fr",t:"Littérature et auteurs",q:"Émile Zola est l'auteur du cycle :",c:["La Comédie Humaine","Les Rougon-Macquart","Les Contemplations","À la Recherche du temps perdu"],a:1,e:"Zola est l'auteur des Rougon-Macquart (Germinal, L'Assommoir) et du 'J'accuse'."},
+{m:"fr",t:"Communication",q:"Qu'est-ce que la communication non verbale ?",c:["La communication par SMS","L'ensemble des messages sans paroles : gestes, mimiques, posture","La communication par affiches","La communication silencieuse"],a:1,e:"La communication non verbale représente 55 à 90% du message : gestuelle, mimiques, posture, regard."},
+{m:"fr",t:"Lecture et compréhension",q:"Qu'est-ce que l'implicite dans un texte ?",c:["Ce qui est dit clairement","Ce qui est sous-entendu, que le lecteur doit déduire","Les fautes d'orthographe","Le titre"],a:1,e:"L'implicite est ce que l'auteur ne dit pas directement mais laisse deviner."},
+
+// ════════ MATHÉMATIQUES ════════
+{m:"math",t:"Arithmétique",q:"Quel est le résultat de 2³ × 2⁴ ?",c:["2⁷","2¹²","4⁷","16"],a:0,e:"a^m × a^n = a^(m+n). Donc 2³ × 2⁴ = 2^(3+4) = 2⁷ = 128."},
+{m:"math",t:"Arithmétique",q:"Que vaut √144 ?",c:["11","12","13","14"],a:1,e:"√144 = 12 car 12² = 144."},
+{m:"math",t:"Arithmétique",q:"PGCD de 24 et 36 ?",c:["4","6","12","18"],a:2,e:"24 = 2³×3 ; 36 = 2²×3². PGCD = 2²×3 = 12."},
+{m:"math",t:"Arithmétique",q:"0,75 est égal à :",c:["3/5","7/10","3/4","7/9"],a:2,e:"0,75 = 75/100 = 3/4."},
+{m:"math",t:"Arithmétique",q:"Quel est le carré de 15 ?",c:["175","200","225","250"],a:2,e:"15² = 15 × 15 = 225."},
+{m:"math",t:"Algèbre",q:"Si 3x + 5 = 20, alors x vaut :",c:["3","4","5","6"],a:2,e:"3x = 20 - 5 = 15, donc x = 15/3 = 5."},
+{m:"math",t:"Algèbre",q:"Développer (x+3)(x-2) donne :",c:["x²-5x-6","x²+x-6","x²-x+6","x²+5x+6"],a:1,e:"(x+3)(x-2) = x²-2x+3x-6 = x²+x-6."},
+{m:"math",t:"Algèbre",q:"Factoriser x²-9 donne :",c:["(x-3)²","(x+3)(x-3)","(x+9)(x-1)","(x-3)(x-3)"],a:1,e:"x²-9 = x²-3² = (x+3)(x-3) — identité remarquable a²-b² = (a+b)(a-b)."},
+{m:"math",t:"Algèbre",q:"La solution de 2x - 4 = 0 est :",c:["x=0","x=1","x=2","x=4"],a:2,e:"2x = 4, donc x = 2."},
+{m:"math",t:"Algèbre",q:"Simplifier la fraction 18/24 :",c:["2/3","3/4","4/5","5/6"],a:1,e:"PGCD(18,24) = 6. 18/24 = 3/4."},
+{m:"math",t:"Fonctions",q:"La fonction f(x) = 2x + 3 est de type :",c:["Quadratique","Affine","Exponentielle","Trigonométrique"],a:1,e:"f(x) = ax + b est une fonction affine. Ici a=2, b=3. Son graphe est une droite."},
+{m:"math",t:"Fonctions",q:"Si f(x) = x² - 4x + 3, f(1) vaut :",c:["0","1","2","3"],a:0,e:"f(1) = 1 - 4 + 3 = 0."},
+{m:"math",t:"Fonctions",q:"Quel est le discriminant de x² - 5x + 6 = 0 ?",c:["1","4","5","9"],a:0,e:"Δ = b² - 4ac = 25 - 24 = 1."},
+{m:"math",t:"Fonctions",q:"Les solutions de x² - 5x + 6 = 0 sont :",c:["x=1 et x=6","x=2 et x=3","x=3 et x=4","x=-2 et x=-3"],a:1,e:"Δ=1, x = (5±1)/2 → x=3 ou x=2."},
+{m:"math",t:"Géométrie",q:"L'aire d'un disque de rayon 5 cm est :",c:["10π cm²","25π cm²","50π cm²","100π cm²"],a:1,e:"A = π×r² = π×25 = 25π ≈ 78,5 cm²."},
+{m:"math",t:"Géométrie",q:"L'hypoténuse d'un triangle rectangle de côtés 3 et 4 vaut :",c:["5","6","7","8"],a:0,e:"c² = 3²+4² = 9+16 = 25, donc c = 5. (Triplet pythagoricien 3-4-5)"},
+{m:"math",t:"Géométrie",q:"Le volume d'un cube de côté 3 cm est :",c:["9 cm³","18 cm³","27 cm³","36 cm³"],a:2,e:"V = c³ = 3³ = 27 cm³."},
+{m:"math",t:"Statistiques",q:"La médiane d'une série est :",c:["La valeur la plus fréquente","La valeur qui partage la série en deux groupes égaux","La moyenne arithmétique","L'écart entre max et min"],a:1,e:"La médiane partage la série ordonnée en deux moitiés égales."},
+{m:"math",t:"Statistiques",q:"La moyenne de 4, 8, 6, 10, 12 est :",c:["7","8","9","10"],a:1,e:"Somme = 40, effectif = 5, moyenne = 40/5 = 8."},
+{m:"math",t:"Statistiques",q:"L'étendue de la série 3, 7, 2, 9, 5 est :",c:["5","6","7","9"],a:2,e:"Étendue = max - min = 9 - 2 = 7."},
+{m:"math",t:"Pourcentages",q:"20% de 150 est :",c:["25","30","35","40"],a:1,e:"150 × 0,20 = 30."},
+{m:"math",t:"Pourcentages",q:"Un article à 80€ est soldé à -25%. Son nouveau prix est :",c:["55€","60€","65€","70€"],a:1,e:"80 × (1-0,25) = 80 × 0,75 = 60€."},
+{m:"math",t:"Pourcentages",q:"Un prix passe de 200€ à 250€. Quelle est la hausse en % ?",c:["20%","25%","30%","50%"],a:1,e:"(250-200)/200 × 100 = 50/200 × 100 = 25%."},
+{m:"math",t:"Trigonométrie",q:"Dans un triangle rectangle, sin(θ) = :",c:["adjacent/hypoténuse","opposé/hypoténuse","opposé/adjacent","hypoténuse/adjacent"],a:1,e:"sin = côté opposé / hypoténuse. (SOH CAH TOA)"},
+{m:"math",t:"Trigonométrie",q:"cos(60°) vaut :",c:["√3/2","1/2","1","0"],a:1,e:"cos(60°) = 1/2. Valeur à retenir absolument."},
+
+// ════════ PHYSIQUE-CHIMIE ════════
+{m:"pc",t:"Mécanique",q:"La première loi de Newton (inertie) stipule que :",c:["Tout corps s'arrête sans force","Tout corps en mouvement reste en mouvement uniforme si aucune force ne s'exerce","F = ma","Action = Réaction"],a:1,e:"Un corps en MRU reste en MRU sauf si une résultante de forces non nulle agit sur lui."},
+{m:"pc",t:"Mécanique",q:"La deuxième loi de Newton est :",c:["v=d/t","F=ma","P=mgh","E=mc²"],a:1,e:"F = ma : la force est égale à la masse fois l'accélération (en Newtons)."},
+{m:"pc",t:"Mécanique",q:"Le poids d'un objet de 5 kg sur Terre (g=10 N/kg) vaut :",c:["5 N","10 N","50 N","500 N"],a:2,e:"P = m × g = 5 × 10 = 50 N."},
+{m:"pc",t:"Électricité",q:"La loi d'Ohm est :",c:["U = I × R","P = U × I","Q = I × t","E = U × Q"],a:0,e:"U = R × I : la tension (Volts) est égale à la résistance (Ohms) fois le courant (Ampères)."},
+{m:"pc",t:"Électricité",q:"La puissance électrique P se calcule :",c:["P = U/I","P = U × I","P = R × I","P = U × R"],a:1,e:"P = U × I (en Watts). Ou aussi P = R × I²."},
+{m:"pc",t:"Électricité",q:"Des résistances en série : la résistance équivalente est :",c:["R_eq = R1 × R2","R_eq = R1 + R2","1/R_eq = 1/R1 + 1/R2","R_eq = R1 / R2"],a:1,e:"En série : R_eq = R1 + R2 + ... Les résistances s'additionnent."},
+{m:"pc",t:"Électricité",q:"Des résistances en parallèle : la relation est :",c:["R_eq = R1 + R2","R_eq = R1 - R2","1/R_eq = 1/R1 + 1/R2","R_eq = R1 × R2"],a:2,e:"En parallèle : 1/R_eq = 1/R1 + 1/R2. La résistance équivalente diminue."},
+{m:"pc",t:"Chimie",q:"L'atome d'eau est composé de :",c:["H2O : 2 hydrogènes et 1 oxygène","H2O : 1 hydrogène et 2 oxygènes","HO2 : 1 hydrogène et 2 oxygènes","H3O : 3 hydrogènes et 1 oxygène"],a:0,e:"L'eau est H₂O : 2 atomes d'hydrogène et 1 atome d'oxygène."},
+{m:"pc",t:"Chimie",q:"Quel est le pH de l'eau pure ?",c:["0","5","7","14"],a:2,e:"L'eau pure est neutre : pH = 7. En dessous de 7 : acide. Au-dessus : basique."},
+{m:"pc",t:"Chimie",q:"Un pH de 3 signifie que la solution est :",c:["Basique","Neutre","Acide","Saline"],a:2,e:"pH < 7 → acide. pH = 7 → neutre. pH > 7 → basique."},
+{m:"pc",t:"Optique",q:"La lumière visible se déplace dans le vide à :",c:["300 km/s","3 000 km/s","300 000 km/s","3 000 000 km/s"],a:2,e:"c ≈ 3×10⁸ m/s = 300 000 km/s. C'est la vitesse maximale dans l'univers."},
+{m:"pc",t:"Optique",q:"Un prisme décompose la lumière blanche en :",c:["Deux couleurs","Trois couleurs primaires","Spectre continu de couleurs","Infrarouge et ultraviolet uniquement"],a:2,e:"Un prisme décompose la lumière blanche en toutes les couleurs de l'arc-en-ciel (spectre visible)."},
+{m:"pc",t:"Thermodynamique",q:"L'unité SI de l'énergie est :",c:["Watt","Joule","Newton","Pascal"],a:1,e:"L'énergie se mesure en Joules (J). Le Watt est l'unité de puissance (J/s)."},
+{m:"pc",t:"Thermodynamique",q:"La formule de l'énergie cinétique est :",c:["E = mgh","E = ½mv²","E = mc²","E = Pt"],a:1,e:"Ec = ½mv² (en Joules). m = masse (kg), v = vitesse (m/s)."},
+{m:"pc",t:"Ondes",q:"La fréquence d'une onde se mesure en :",c:["Mètres","Secondes","Hertz","Décibels"],a:2,e:"La fréquence (nombre d'oscillations par seconde) se mesure en Hertz (Hz)."},
+{m:"pc",t:"Ondes",q:"La relation entre fréquence f, longueur d'onde λ et vitesse v est :",c:["v = f + λ","v = f × λ","v = f / λ","v = λ / f"],a:1,e:"v = f × λ. Si v est la vitesse du son (343 m/s), on peut calculer λ ou f."},
+
+// ════════ INFO & RÉSEAUX ════════
+{m:"info",t:"Réseaux",q:"Que signifie l'adresse IP ?",c:["Internet Protocol — identifiant unique d'un appareil sur un réseau","Information Personnelle","Identifiant de Protocole","Interface Privée"],a:0,e:"Une adresse IP (Internet Protocol) est l'identifiant numérique unique d'un appareil sur un réseau."},
+{m:"info",t:"Réseaux",q:"Qu'est-ce qu'un routeur ?",c:["Un appareil qui imprime","Un équipement réseau qui achemine les paquets de données entre réseaux","Un câble réseau","Un serveur de stockage"],a:1,e:"Le routeur est l'équipement qui dirige les paquets de données vers leur destination en choisissant le meilleur chemin."},
+{m:"info",t:"Réseaux",q:"Qu'est-ce qu'un commutateur (switch) ?",c:["Un routeur simplifié","Un équipement réseau qui connecte des appareils au sein d'un même réseau local","Un pare-feu","Un modem"],a:1,e:"Le switch connecte plusieurs appareils dans un réseau local (LAN) et dirige les trames vers le bon port."},
+{m:"info",t:"Réseaux",q:"Qu'est-ce qu'un masque de sous-réseau ?",c:["Un mot de passe réseau","Un nombre qui définit quelle partie de l'IP est le réseau et quelle partie est l'hôte","Une adresse MAC","Un protocole de sécurité"],a:1,e:"Le masque de sous-réseau sépare la partie réseau et la partie hôte d'une adresse IP (ex: 255.255.255.0)."},
+{m:"info",t:"Réseaux",q:"Le protocole DNS sert à :",c:["Envoyer des emails","Traduire les noms de domaine en adresses IP","Chiffrer les communications","Partager des fichiers"],a:1,e:"DNS (Domain Name System) traduit les noms de domaine (google.com) en adresses IP numériques."},
+{m:"info",t:"Réseaux",q:"Qu'est-ce qu'une adresse MAC ?",c:["Une adresse IP version Mac","Un identifiant physique unique attribué à une interface réseau","Une adresse de messagerie Apple","Un type de protocole réseau"],a:1,e:"L'adresse MAC (Media Access Control) est un identifiant physique unique gravé dans la carte réseau (ex: 00:1A:2B:3C:4D:5E)."},
+{m:"info",t:"Réseaux",q:"Le modèle OSI compte combien de couches ?",c:["4","5","7","9"],a:2,e:"Le modèle OSI comporte 7 couches : Physique, Liaison, Réseau, Transport, Session, Présentation, Application."},
+{m:"info",t:"Réseaux",q:"Qu'est-ce que le protocole DHCP ?",c:["Un protocole de messagerie","Un protocole qui attribue automatiquement des adresses IP aux appareils","Un protocole de chiffrement","Un protocole de transfert de fichiers"],a:1,e:"DHCP (Dynamic Host Configuration Protocol) distribue automatiquement des adresses IP aux appareils d'un réseau."},
+{m:"info",t:"Réseaux",q:"Qu'est-ce qu'une passerelle (gateway) ?",c:["Un routeur domestique uniquement","Le nœud réseau qui fait le lien entre deux réseaux de technologies différentes","Un pare-feu","Un serveur DNS"],a:1,e:"Une passerelle est le nœud qui connecte deux réseaux différents, souvent votre routeur vers Internet."},
+{m:"info",t:"Réseaux",q:"La différence entre TCP et UDP est que :",c:["TCP est plus rapide","TCP garantit la livraison des données, UDP ne le fait pas","UDP est plus sécurisé","Ils sont identiques"],a:1,e:"TCP (fiable, contrôle d'erreurs) vs UDP (plus rapide, pas de garantie de livraison). TCP pour le web, UDP pour le streaming."},
+{m:"info",t:"Systèmes",q:"Qu'est-ce qu'un système d'exploitation ?",c:["Un logiciel de bureautique","Le logiciel fondamental qui gère les ressources matérielles et logicielles d'un ordinateur","Un antivirus","Un navigateur web"],a:1,e:"Le système d'exploitation (Windows, Linux, macOS) gère le matériel, les processus et offre une interface aux applications."},
+{m:"info",t:"Systèmes",q:"Qu'est-ce qu'un processus en informatique ?",c:["Un fichier sur le disque","Un programme en cours d'exécution","Une connexion réseau","Une unité de stockage"],a:1,e:"Un processus est un programme en cours d'exécution. Le CPU lui alloue du temps et de la mémoire."},
+{m:"info",t:"Internet",q:"Qu'est-ce qu'un nom de domaine ?",c:["Une adresse IP écrite différemment","Un nom lisible par l'humain qui correspond à une adresse IP","Un protocole réseau","Un type de serveur"],a:1,e:"Le nom de domaine (google.com) est une adresse lisible par l'homme qui se traduit en IP via le DNS."},
+{m:"info",t:"Internet",q:"HTTPS est différent de HTTP car il :",c:["Est plus lent","Chiffre les communications avec SSL/TLS","Est réservé aux serveurs","Utilise un autre port"],a:1,e:"HTTPS ajoute une couche de chiffrement SSL/TLS à HTTP. Le 'S' signifie Secure."},
+{m:"info",t:"Internet",q:"Qu'est-ce qu'un FAI (ISP) ?",c:["Un type de fichier","Un fournisseur d'accès à Internet","Un protocole réseau","Un logiciel de navigation"],a:1,e:"Un FAI (Fournisseur d'Accès à Internet) est l'entreprise qui vous connecte à Internet (Orange, SFR, Free...)."},
+
+// ════════ ÉLECTRONIQUE ════════
+{m:"elec",t:"Composants de base",q:"Qu'est-ce qu'une résistance dans un circuit ?",c:["Un composant qui stocke de l'énergie","Un composant qui limite le courant dans un circuit","Un composant qui amplifie le signal","Un composant qui produit de la lumière"],a:1,e:"La résistance s'oppose au passage du courant. Sa valeur en Ohms est indiquée par des bandes de couleur."},
+{m:"elec",t:"Composants de base",q:"Qu'est-ce qu'un condensateur ?",c:["Un composant qui résiste au courant","Un composant qui stocke de l'énergie électrique sous forme de charge","Un transistor amplifié","Un générateur de courant"],a:1,e:"Le condensateur stocke de l'énergie électrostatique entre deux plaques conductrices. Unité : Farad (F)."},
+{m:"elec",t:"Composants de base",q:"Qu'est-ce qu'une diode ?",c:["Un composant bidirectionnel","Un composant qui laisse passer le courant dans un seul sens","Un amplificateur","Un oscillateur"],a:1,e:"La diode est un composant semi-conducteur qui ne laisse passer le courant que dans un sens (anode → cathode)."},
+{m:"elec",t:"Composants de base",q:"Qu'est-ce qu'un transistor ?",c:["Un composant passif de stockage","Un composant semi-conducteur utilisé comme interrupteur ou amplificateur","Un transformateur de tension","Une résistance variable"],a:1,e:"Le transistor peut amplifier un signal ou servir d'interrupteur électronique. C'est la base des processeurs."},
+{m:"elec",t:"Composants de base",q:"Qu'est-ce qu'une LED ?",c:["Un condensateur lumineux","Une diode électroluminescente qui émet de la lumière lorsqu'elle est traversée par un courant","Un laser","Un phototransistor"],a:1,e:"La LED (Light Emitting Diode) est une diode qui émet de la lumière. Elle est très économe en énergie."},
+{m:"elec",t:"Circuits",q:"Qu'est-ce qu'un circuit intégré ?",c:["Un simple fil conducteur","Un ensemble de composants électroniques miniaturisés sur une puce de silicium","Un circuit imprimé grande taille","Un transformateur miniature"],a:1,e:"Un circuit intégré (puce/chip) contient des millions/milliards de transistors sur un minuscule morceau de silicium."},
+{m:"elec",t:"Circuits",q:"Qu'est-ce qu'un microcontrôleur ?",c:["Un simple microprocesseur","Un circuit intégré contenant processeur, mémoire et entrées/sorties sur une seule puce","Un disque dur miniature","Un module de communication"],a:1,e:"Le microcontrôleur (Arduino, STM32) est un 'ordinateur sur une puce' avec CPU, RAM, ROM et périphériques E/S intégrés."},
+{m:"elec",t:"Signaux",q:"La différence entre courant alternatif (AC) et continu (DC) est :",c:["Le courant continu est plus dangereux","Le courant alternatif change de sens périodiquement, le continu reste constant","Ils ont la même fréquence","Ils s'utilisent dans les mêmes applications"],a:1,e:"Le courant alternatif (réseau 50Hz) change de sens. Le courant continu (batteries) reste constant."},
+{m:"elec",t:"Signaux",q:"La fréquence du courant électrique du réseau en France est :",c:["50 Hz","60 Hz","100 Hz","230 Hz"],a:0,e:"En Europe, le réseau électrique fonctionne en courant alternatif 230V / 50Hz."},
+{m:"elec",t:"Signaux",q:"Un signal numérique est caractérisé par :",c:["Une infinité de valeurs continues","Seulement deux états : 0 et 1 (haut/bas)","Uniquement des valeurs sinusoïdales","Des valeurs entre 0 et 255"],a:1,e:"Un signal numérique (logique) ne prend que deux états : 0 (bas) et 1 (haut). C'est la base du binaire."},
+{m:"elec",t:"Logique",q:"La porte logique AND produit 1 seulement si :",c:["Au moins une entrée est à 1","Toutes les entrées sont à 1","Toutes les entrées sont à 0","Au moins une entrée est à 0"],a:1,e:"Porte AND : sortie = 1 uniquement si A=1 ET B=1. Table de vérité : 0,0→0 ; 0,1→0 ; 1,0→0 ; 1,1→1."},
+{m:"elec",t:"Logique",q:"La porte logique OR produit 1 si :",c:["Toutes les entrées sont à 1","Au moins une entrée est à 1","Toutes les entrées sont à 0","Exactement une entrée est à 1"],a:1,e:"Porte OR : sortie = 1 si A=1 OU B=1 (ou les deux). Faux seulement si A=0 ET B=0."},
+{m:"elec",t:"Logique",q:"La porte NOT inverse la sortie. NOT(1) vaut :",c:["1","0","2","Indéfini"],a:1,e:"La porte NOT (inverseur) : NOT(0)=1, NOT(1)=0."},
+
+// ════════ CYBERSÉCURITÉ ════════
+{m:"cyber",t:"Menaces",q:"Qu'est-ce qu'un malware ?",c:["Un logiciel de sécurité","Un logiciel malveillant conçu pour endommager ou accéder illégalement à un système","Un antivirus","Un pare-feu"],a:1,e:"Malware (malicious software) = logiciel malveillant : virus, trojans, ransomwares, spywares..."},
+{m:"cyber",t:"Menaces",q:"Qu'est-ce qu'un ransomware ?",c:["Un antivirus","Un logiciel qui chiffre vos données et demande une rançon","Un logiciel espion","Un virus qui se reproduit"],a:1,e:"Le ransomware chiffre les fichiers de la victime et exige un paiement pour les déchiffrer."},
+{m:"cyber",t:"Menaces",q:"Qu'est-ce que le phishing ?",c:["Un type de chiffrement","Une technique d'escroquerie par email/site pour voler des identifiants","Un virus réseau","Un scan de ports"],a:1,e:"Le phishing (hameçonnage) imite des entités legit (banque, admin) pour voler mots de passe ou coordonnées bancaires."},
+{m:"cyber",t:"Menaces",q:"Qu'est-ce qu'un virus informatique ?",c:["Un programme qui optimise le système","Un programme malveillant qui se réplique en s'attachant à d'autres fichiers","Un antivirus obsolète","Un protocole réseau"],a:1,e:"Un virus informatique est un programme malveillant capable de se reproduire en infectant d'autres fichiers/programmes."},
+{m:"cyber",t:"Menaces",q:"Qu'est-ce qu'une attaque par force brute ?",c:["Une attaque physique sur les serveurs","Tester toutes les combinaisons possibles pour trouver un mot de passe","Une injection SQL","Une attaque DDoS"],a:1,e:"L'attaque par force brute essaie systématiquement toutes les combinaisons possibles pour craquer un mot de passe."},
+{m:"cyber",t:"Protection",q:"Qu'est-ce qu'un pare-feu (firewall) ?",c:["Un antivirus","Un équipement ou logiciel qui filtre le trafic réseau selon des règles de sécurité","Un proxy","Un VPN"],a:1,e:"Le pare-feu filtre le trafic entrant et sortant selon des règles définies pour bloquer les connexions non autorisées."},
+{m:"cyber",t:"Protection",q:"Qu'est-ce qu'un VPN ?",c:["Un antivirus","Un réseau privé virtuel qui chiffre et tunnelise votre connexion","Un DNS sécurisé","Un pare-feu avancé"],a:1,e:"Un VPN (Virtual Private Network) crée un tunnel chiffré entre l'utilisateur et Internet, masquant l'IP et sécurisant les données."},
+{m:"cyber",t:"Chiffrement",q:"Qu'est-ce que le chiffrement symétrique ?",c:["Utilisation de deux clés différentes","Utilisation d'une même clé pour chiffrer et déchiffrer","Chiffrement à sens unique","Hachage des données"],a:1,e:"Chiffrement symétrique : même clé pour chiffrer (ciphertext) et déchiffrer (plaintext). Rapide mais problème de partage de clé."},
+{m:"cyber",t:"Chiffrement",q:"Qu'est-ce que le chiffrement asymétrique ?",c:["Utilisation d'une seule clé","Utilisation d'une paire de clés : publique pour chiffrer, privée pour déchiffrer","Chiffrement du disque dur","Un protocole de compression"],a:1,e:"Chiffrement asymétrique : clé publique (chiffrement) + clé privée (déchiffrement). Utilisé dans HTTPS, SSH."},
+{m:"cyber",t:"Chiffrement",q:"Un hash (empreinte numérique) est :",c:["Un type de chiffrement réversible","Une fonction à sens unique qui produit une empreinte fixe d'un message","Un algorithme de compression","Un protocole réseau"],a:1,e:"Le hash/digest est irréversible : on ne peut pas retrouver le message original depuis l'empreinte. Utilisé pour vérifier l'intégrité."},
+{m:"cyber",t:"Bonnes pratiques",q:"Un bon mot de passe doit :",c:["Être court et simple à mémoriser","Être long, complexe, unique et non réutilisé","Être le même partout pour ne pas oublier","Contenir uniquement des chiffres"],a:1,e:"Un bon mot de passe : 12+ caractères, majuscules/minuscules/chiffres/symboles, unique par site. Utiliser un gestionnaire de mots de passe."},
+{m:"cyber",t:"Bonnes pratiques",q:"L'authentification à double facteur (2FA) consiste à :",c:["Avoir deux mots de passe","Combiner quelque chose que vous savez + quelque chose que vous possédez","Utiliser deux appareils différents","Changer de mot de passe deux fois par an"],a:1,e:"La 2FA ajoute une seconde vérification (SMS, TOTP, clé physique) en plus du mot de passe. Elle bloque la plupart des intrusions."},
+
+// ════════ ANGLAIS ════════
+{m:"ang",t:"Grammar",q:"Which sentence is correct?",c:["I have went to the store","I went to the store","I have go to the store","I did went to the store"],a:1,e:"Simple past tense: 'went' is the irregular past of 'go'. Use simple past for completed actions."},
+{m:"ang",t:"Grammar",q:"'She _____ working here for 5 years.' Complete:",c:["is","was","has been","have been"],a:2,e:"Present perfect continuous: 'has been working' for an action that started in the past and continues."},
+{m:"ang",t:"Grammar",q:"What is the passive form of 'The chef cooked the meal'?",c:["The meal cooked by the chef","The meal was cooked by the chef","The meal is cooked by the chef","The meal has cooked by the chef"],a:1,e:"Passive voice: subject + was/were + past participle + by + agent. Past simple passive."},
+{m:"ang",t:"Grammar",q:"Choose the correct conditional: 'If I ___ rich, I would travel.'",c:["am","was","were","be"],a:2,e:"Second conditional uses 'were' for all persons: 'If I were rich...' (imaginary situation)."},
+{m:"ang",t:"Grammar",q:"'Despite the rain, we went out.' 'Despite' is followed by:",c:["A clause with subject and verb","A noun or -ing form","An infinitive","A question"],a:1,e:"'Despite' + noun/pronoun/gerund (-ing). 'Although/Even though' + full clause."},
+{m:"ang",t:"Vocabulary",q:"What does 'broadcast' mean?",c:["To narrow","To diffuse/transmit to many people at once","To record","To encrypt"],a:1,e:"'Broadcast' = diffusion / to transmit widely. 'The news was broadcast live.' (vocab: broadcast → diffusion)"},
+{m:"ang",t:"Vocabulary",q:"What does 'to retrieve' mean?",c:["To delete permanently","To recover/get back data or an item","To encrypt","To forward"],a:1,e:"'To retrieve' = récupérer. 'The system retrieved the deleted file.' (vocab: to retrieve → récupérer)"},
+{m:"ang",t:"Vocabulary",q:"What does 'hosting' mean in IT?",c:["Welcoming guests","Providing server space for websites/apps","Encrypting data","Routing traffic"],a:1,e:"'Hosting' = hébergement. A web host provides the server where your website lives. (vocab: hosting → hébergement)"},
+{m:"ang",t:"Vocabulary",q:"The word 'gateway' in networking means:",c:["A physical gate","A node that connects two different networks","A firewall rule","A cable"],a:1,e:"'Gateway' = passerelle. It connects networks using different protocols. (vocab: gateway → passerelle)"},
+{m:"ang",t:"Vocabulary",q:"'However' is used to:",c:["Add information","Show contrast or contradiction","Give an example","Explain a cause"],a:1,e:"'However' = cependant. It introduces a contrast. (vocab: however → cependant)"},
+{m:"ang",t:"Vocabulary",q:"What does 'to store' mean?",c:["To buy in a store","To save/keep data or items","To delete","To move"],a:1,e:"'To store' = stocker. 'The data is stored on the cloud.' (vocab: to store → stocker)"},
+{m:"ang",t:"Vocabulary",q:"'ISP' stands for:",c:["Internet Service Protocol","Internet Security Program","Internet Service Provider","Internal System Port"],a:2,e:"ISP = Internet Service Provider = FAI (Fournisseur d'Accès Internet). Ex: Orange, SFR, Free."},
+{m:"ang",t:"Vocabulary",q:"What is a 'domain name'?",c:["An IP address","A readable name that maps to an IP address","A username","A password"],a:1,e:"A domain name (e.g. google.com) is the readable address that DNS translates to an IP. (vocab: domain name → nom de domaine)"},
+{m:"ang",t:"Reading",q:"'The data is encrypted rather than stored in plaintext.' This means:",c:["Data is lost","Data is protected by encoding instead of being stored openly","Data is deleted","Data is broadcast"],a:1,e:"'Rather than' = plutôt que. 'Plaintext' = texte clair (unencrypted). 'Encrypted' = chiffré."},
+{m:"ang",t:"Reading",q:"'Although the device is old, it still works.' 'Although' introduces:",c:["A result","A concession/contrast","A condition","A cause"],a:1,e:"'Although' = bien que. It introduces a concessive clause (contrast/surprising fact). Vocab: although → bien que."},
+
+// ════════ DNL ════════
+{m:"dnl",t:"Vocabulary",q:"What does 'IP address' mean in French?",c:["adresse informatique","adresse IP","adresse internet","adresse interne"],a:1,e:"IP address → adresse IP. It identifies a device on a network. (wordbank: IP address → adresse IP)"},
+{m:"dnl",t:"Vocabulary",q:"'Router' translates to:",c:["commutateur","passerelle","routeur","serveur"],a:2,e:"Router → routeur. It routes packets between networks. (wordbank: router → routeur)"},
+{m:"dnl",t:"Vocabulary",q:"'Backup' means in French:",c:["sauvegarde","copie originale","mise à jour","installation"],a:0,e:"Backup → sauvegarde. Always keep backups of important data. (wordbank: backup → sauvegarde)"},
+{m:"dnl",t:"Vocabulary",q:"The English word for 'réseau' is:",c:["device","network","browser","host"],a:1,e:"Network → réseau. A network is a set of connected devices. (wordbank: network → réseau)"},
+{m:"dnl",t:"Vocabulary",q:"'To download' translates to:",c:["téléverser","installer","télécharger","stocker"],a:2,e:"To download → télécharger (receiving data). ≠ to upload → téléverser (sending data). (wordbank)"},
+{m:"dnl",t:"Vocabulary",q:"'Encryption' in French is:",c:["déchiffrement","chiffrement","sauvegarde","compression"],a:1,e:"Encryption → chiffrement. Decryption → déchiffrement. (wordbank: encryption → chiffrement)"},
+{m:"dnl",t:"Vocabulary",q:"'Plaintext' means:",c:["texte chiffré","texte compressé","texte clair","texte encodé"],a:2,e:"Plaintext → texte clair (unencrypted text). ≠ ciphertext → texte chiffré. (wordbank)"},
+{m:"dnl",t:"Vocabulary",q:"What does 'to resolve' mean in DNS context?",c:["To delete a domain","To translate a domain name into an IP address","To register a domain","To redirect traffic"],a:1,e:"To resolve → résoudre. The DNS resolver resolves domain names into IP addresses. (wordbank: to resolve → résoudre)"},
+{m:"dnl",t:"Vocabulary",q:"A 'firewall' is used to:",c:["Speed up the network","Filter and block unauthorized traffic","Provide wireless connectivity","Store data"],a:1,e:"A firewall filters traffic. Related: to harm → endommager, to spread → répandre. (wordbank)"},
+{m:"dnl",t:"Vocabulary",q:"'Cache' translates to:",c:["cache-cache","mémoire cache","corbeille","disque dur"],a:1,e:"Cache → mémoire cache. It stores frequently accessed data for faster retrieval. (wordbank: cache → mémoire cache)"},
+{m:"dnl",t:"Vocabulary",q:"'To upload' means:",c:["télécharger","installer","téléverser","supprimer"],a:2,e:"To upload → téléverser (envoyer vers un serveur). ≠ to download → télécharger. (wordbank)"},
+{m:"dnl",t:"Vocabulary",q:"'Switch' in networking context means:",c:["routeur","commutateur","passerelle","pare-feu"],a:1,e:"Switch → commutateur. It connects devices in a LAN and switches frames between ports. (wordbank: switch → commutateur)"},
+{m:"dnl",t:"Vocabulary",q:"'Root server' translates to:",c:["serveur local","serveur racine","serveur TLD","serveur DNS récursif"],a:1,e:"Root server → serveur racine. It's the top level of the DNS hierarchy. (wordbank: root server → serveur racine)"},
+{m:"dnl",t:"Vocabulary",q:"The French term for 'top-level domain' is:",c:["domaine de premier niveau","nom de domaine","domaine racine","sous-domaine"],a:0,e:"Top-level domain → domaine de premier niveau (TLD). Examples: .com, .fr, .org. (wordbank)"},
+{m:"dnl",t:"Vocabulary",q:"'Digest' in cryptography means:",c:["copie de sauvegarde","résumé","empreinte numérique","texte chiffré"],a:2,e:"Digest → empreinte (numérique/cryptographique). A hash digest is a fixed-size fingerprint of data. (wordbank: digest → empreinte)"},
+{m:"dnl",t:"DNS",q:"How does DNS resolution work? First step:",c:["Query goes to root server","Browser checks its local cache first","Query goes to TLD server","ISP assigns an IP"],a:1,e:"DNS resolution: 1) Browser cache → 2) Resolver cache → 3) Root server → 4) TLD server → 5) Authoritative server."},
+{m:"dnl",t:"DNS",q:"What is a 'TLD server'?",c:["A server that stores all websites","A server responsible for a top-level domain (.com, .fr)","A root server","A local DNS server"],a:1,e:"TLD server → serveur TLD. It knows which authoritative servers handle domains under .com, .fr, etc. (wordbank: TLD server → serveur TLD)"},
+{m:"dnl",t:"DNS",q:"What does 'although' mean?",c:["because","bien que","however","instead of"],a:1,e:"although → bien que"},
+{m:"dnl",t:"DNS",q:"What does 'authoritative' mean?",c:["temporary","making decisions","faisant autorité","optional"],a:2,e:"authoritative → faisant autorité"},
+{m:"dnl",t:"DNS",q:"What is a 'backup'?",c:["a virus","a connection","une sauvegarde","a network"],a:2,e:"backup → sauvegarde"},
+{m:"dnl",t:"DNS",q:"What does 'broadcast' mean?",c:["stockage","diffusion","connexion privée","filtrage"],a:1,e:"broadcast → diffusion"},
+{m:"dnl",t:"DNS",q:"What is a 'browser'?",c:["un serveur","un navigateur","un câble","un OS"],a:1,e:"browser → navigateur"},
+{m:"dnl",t:"DNS",q:"What does 'cache' mean?",c:["mémoire cache","serveur distant","stockage cloud","réseau"],a:0,e:"cache → mémoire cache"},
+{m:"dnl",t:"DNS",q:"What does 'domain name' mean?",c:["adresse IP","nom de domaine","routeur","protocole"],a:1,e:"domain name → nom de domaine"},
+{m:"dnl",t:"DNS",q:"What is an 'IP address'?",c:["un identifiant réseau","un fichier","un dossier","un protocole"],a:0,e:"IP address → adresse IP"},
+{m:"dnl",t:"DNS",q:"What does 'ISP' stand for?",c:["Internet Service Provider","Internal Server Protocol","Internet Secure Process","Integrated System Provider"],a:0,e:"ISP → fournisseur d’accès Internet"},
+{m:"dnl",t:"DNS",q:"What is a 'router'?",c:["un stockage","un routeur","un navigateur","un fichier"],a:1,e:"router → routeur"},
+{m:"dnl",t:"DNS",q:"What is a 'switch'?",c:["un câble","un serveur","un commutateur","un logiciel"],a:2,e:"switch → commutateur"},
+{m:"dnl",t:"DNS",q:"What is a 'network'?",c:["un logiciel","un réseau","un protocole","un serveur"],a:1,e:"network → réseau"},
+{m:"dnl",t:"DNS",q:"What does 'host' mean in networking?",c:["utilisateur","hôte","routeur","fichier"],a:1,e:"host → hôte"},
+{m:"dnl",t:"DNS",q:"What does 'hosting' mean?",c:["stockage","hébergement","connexion","transfert"],a:1,e:"hosting → hébergement"},
+{m:"dnl",t:"DNS",q:"What does 'query' mean?",c:["réponse","requête","donnée","cache"],a:1,e:"query → requête"},
+{m:"dnl",t:"DNS",q:"What is a 'resolver'?",c:["un serveur DNS","un navigateur","un routeur","un switch"],a:0,e:"resolver → résolveur DNS"},
+{m:"dnl",t:"DNS",q:"What is a 'root server'?",c:["serveur final","serveur local","serveur racine","serveur TLD"],a:2,e:"root server → serveur racine"},
+{m:"dnl",t:"DNS",q:"What does 'to resolve' mean?",c:["créer","résoudre","supprimer","envoyer"],a:1,e:"to resolve → résoudre"},
+{m:"dnl",t:"DNS",q:"What does 'to respond' mean?",c:["répondre","envoyer","résoudre","supprimer"],a:0,e:"to respond → répondre"},
+{m:"dnl",t:"DNS",q:"What does 'to retrieve' mean?",c:["envoyer","supprimer","récupérer","stocker"],a:2,e:"to retrieve → récupérer"},
+{m:"dnl",t:"DNS",q:"What does 'to store' mean?",c:["envoyer","stocker","supprimer","créer"],a:1,e:"to store → stocker"},
+{m:"dnl",t:"DNS",q:"What does 'to upload' mean?",c:["télécharger","téléverser","supprimer","copier"],a:1,e:"to upload → téléverser"},
+{m:"dnl",t:"DNS",q:"What does 'to download' mean?",c:["envoyer","télécharger","supprimer","stocker"],a:1,e:"to download → télécharger"},
+{m:"dnl",t:"DNS",q:"What does 'to install' mean?",c:["installer","supprimer","envoyer","tester"],a:0,e:"to install → installer"},
+{m:"dnl",t:"DNS",q:"What does 'to check' mean?",c:["tester","vérifier","envoyer","installer"],a:1,e:"to check → vérifier"},
+{m:"dnl",t:"DNS",q:"What does 'to redirect' mean?",c:["rediriger","supprimer","stocker","envoyer"],a:0,e:"to redirect → rediriger"},
+{m:"dnl",t:"DNS",q:"What does 'to provide' mean?",c:["fournir","envoyer","stocker","créer"],a:0,e:"to provide → fournir"},
+{m:"dnl",t:"DNS",q:"What does 'to delete' mean?",c:["copier","effacer","envoyer","stocker"],a:1,e:"to delete → effacer"},
+{m:"dnl",t:"DNS",q:"What does 'encryption' mean?",c:["compression","chiffrement","stockage","réseau"],a:1,e:"encryption → chiffrement"},
+{m:"dnl",t:"DNS",q:"What does 'decryption' mean?",c:["compression","déchiffrement","stockage","réseau"],a:1,e:"decryption → déchiffrement"},
+{m:"dnl",t:"DNS",q:"What is 'plaintext'?",c:["texte chiffré","texte clair","données","clé"],a:1,e:"plaintext → texte clair"},
+{m:"dnl",t:"DNS",q:"What is 'ciphertext'?",c:["texte clair","texte chiffré","clé","fichier"],a:1,e:"ciphertext → texte chiffré"},
+{m:"dnl",t:"DNS",q:"What does 'theft' mean?",c:["vol","attaque","erreur","réseau"],a:0,e:"theft → vol"},
+{m:"dnl",t:"DNS",q:"What does 'thief' mean?",c:["utilisateur","voleur","admin","serveur"],a:1,e:"thief → voleur"},
+{m:"dnl",t:"DNS",q:"What does 'to harm' mean?",c:["protéger","endommager","créer","stocker"],a:1,e:"to harm → endommager"},
+{m:"dnl",t:"DNS",q:"What does 'to spread' mean?",c:["propager","stocker","créer","envoyer"],a:0,e:"to spread → répandre"},
+{m:"dnl",t:"DNS",q:"What does 'company' mean?",c:["serveur","réseau","société","fichier"],a:2,e:"company → société"},
+{m:"dnl",t:"DNS",q:"What does 'computer' mean?",c:["ordinateur","serveur","réseau","donnée"],a:0,e:"computer → ordinateur"},
+{m:"dnl",t:"DNS",q:"What does 'data' mean?",c:["données","fichier","serveur","réseau"],a:0,e:"data → données"},
+{m:"dnl",t:"DNS",q:"What does 'device' mean?",c:["réseau","dispositif","serveur","logiciel"],a:1,e:"device → dispositif"},
+{m:"dnl",t:"DNS",q:"What does 'file' mean?",c:["dossier","serveur","fichier","réseau"],a:2,e:"file → fichier"},
+{m:"dnl",t:"DNS",q:"What does 'folder' mean?",c:["fichier","dossier","serveur","réseau"],a:1,e:"folder → dossier"},
+{m:"dnl",t:"DNS",q:"What does 'form' mean?",c:["formulaire","fichier","serveur","réseau"],a:0,e:"form → formulaire"},
+{m:"dnl",t:"DNS",q:"What does 'forwarding' mean?",c:["stockage","relayage","suppression","connexion"],a:1,e:"forwarding → relayage"},
+{m:"dnl",t:"DNS",q:"What does 'free' mean?",c:["gratuit","rapide","sécurisé","distant"],a:0,e:"free → gratuit"},
+{m:"dnl",t:"DNS",q:"What does 'frame' mean?",c:["trame","fichier","paquet","réseau"],a:0,e:"frame → trame"},
+{m:"dnl",t:"DNS",q:"What does 'gateway' mean?",c:["routeur","passerelle","serveur","switch"],a:1,e:"gateway → passerelle"},
+{m:"dnl",t:"DNS",q:"What does 'identifier' mean?",c:["identifiant","serveur","clé","réseau"],a:0,e:"identifier → identifiant"},
+{m:"dnl",t:"DNS",q:"What does 'layers' mean?",c:["couches","serveurs","réseaux","protocoles"],a:0,e:"layers → couches"},
+{m:"dnl",t:"DNS",q:"What does 'link' mean?",c:["lien","serveur","routeur","paquet"],a:0,e:"link → lien"},
+{m:"dnl",t:"DNS",q:"What does 'mask' mean?",c:["clé","masque","serveur","adresse"],a:1,e:"mask → masque"},
+{m:"dnl",t:"DNS",q:"What does 'range' mean?",c:["portée","réseau","serveur","zone"],a:0,e:"range → portée"},
+{m:"dnl",t:"DNS",q:"What does 'registration' mean?",c:["connexion","enregistrement","création","validation"],a:1,e:"registration → enregistrement"},
+{m:"dnl",t:"DNS",q:"What does 'remote' mean?",c:["local","distant","rapide","sécurisé"],a:1,e:"remote → distant"},
+{m:"dnl",t:"DNS",q:"What does 'size' mean?",c:["volume","taille","poids","format"],a:1,e:"size → taille"},
+{m:"dnl",t:"DNS",q:"What does 'storage' mean?",c:["stockage","mémoire","serveur","réseau"],a:0,e:"storage → stockage"},
+{m:"dnl",t:"DNS",q:"What does 'switch off' mean?",c:["allumer","éteindre","redémarrer","configurer"],a:1,e:"switch off → éteindre"},
+{m:"dnl",t:"DNS",q:"What does 'to initiate' mean?",c:["initier","finir","envoyer","tester"],a:0,e:"to initiate → initier"},
+{m:"dnl",t:"DNS",q:"What does 'to lead to' mean?",c:["empêcher","mener à","supprimer","tester"],a:1,e:"to lead to → mener à"},
+{m:"dnl",t:"DNS",q:"What does 'to matter' mean?",c:["compter","fonctionner","exister","tester"],a:0,e:"to matter → avoir de l'utilité"},
+{m:"dnl",t:"DNS",q:"What does 'to report' mean?",c:["envoyer","signaler","tester","stocker"],a:1,e:"to report → signaler"},
+{m:"dnl",t:"DNS",q:"What does 'to sequence' mean?",c:["organiser","séquencer","envoyer","tester"],a:1,e:"to sequence → séquencer"},
+{m:"dnl",t:"DNS",q:"What does 'to translate' mean?",c:["coder","traduire","envoyer","tester"],a:1,e:"to translate → traduire"},
+{m:"dnl",t:"DNS",q:"What does 'to worry' mean?",c:["réfléchir","s’inquiéter","tester","envoyer"],a:1,e:"to worry → s’inquiéter"},
+{m:"dnl",t:"DNS",q:"What does 'unit' mean?",c:["module","unité","serveur","bloc"],a:1,e:"unit → unité"},
+{m:"dnl",t:"DNS",q:"What does 'usually' mean?",c:["parfois","souvent","habituellement","rarement"],a:2,e:"usually → habituellement"},
+{m:"dnl",t:"DNS",q:"What does 'while' mean?",c:["et","tandis que","ou","car"],a:1,e:"while → tandis que"},
+{m:"dnl",t:"DNS",q:"What does 'instead of' mean?",c:["avec","au lieu de","contre","sans"],a:1,e:"instead of → au lieu de"},
+{m:"dnl",t:"DNS",q:"What does 'rather than' mean?",c:["et","plutôt que","mais","car"],a:1,e:"rather than → plutôt que"},
+{m:"dnl",t:"DNS",q:"What does 'chart' mean?",c:["graphique","tableau","donnée","courbe"],a:0,e:"chart → graphique"},
+{m:"dnl",t:"DNS",q:"What does 'digest' mean?",c:["clé","empreinte","hash","donnée"],a:1,e:"digest → empreinte"},
+];
+
+// ════════════════════════════════════════
+// HOME
+// ════════════════════════════════════════
+function buildHome() {
+  const tabs = document.getElementById('matiere-tabs');
+  tabs.innerHTML = '<button class="tab-btn active" onclick="filterMat(\'__all__\',this)">Toutes</button>'
+    + Object.entries(MATIERES).map(([k,v]) =>
+        `<button class="tab-btn" onclick="filterMat('${k}',this)">${v.label}</button>`
+      ).join('');
+
+  document.getElementById('total-count').textContent =
+    Q.length + ' questions · ' + Object.values(MATIERES).map(m=>m.label).join(' · ');
+
+  renderCatGrid('__all__');
+}
+
+function filterMat(m, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCatGrid(m);
+}
+
+function renderCatGrid(m) {
+  const filtered = m === '__all__' ? Q : Q.filter(q => q.m === m);
+  const themes = [...new Set(filtered.map(q => q.t))];
+  const grid = document.getElementById('cat-grid');
+  const u = currentUser ? getUser(currentUser.login) : null;
+  grid.innerHTML = themes.map(t => {
+    const matQ = filtered.filter(q => q.t === t);
+    const matKey = matQ[0].m;
+    const { badge, label } = MATIERES[matKey];
+    let scoreHtml = '';
+    if (u && u.matStats && u.matStats[matKey]) {
+      const ms = u.matStats[matKey];
+      const tot = ms.ok + ms.ko;
+      const pct = tot ? Math.round(ms.ok/tot*100) : 0;
+      const color = pct>=70?'var(--green)':pct>=40?'var(--accent)':'var(--red)';
+      scoreHtml = `<div class="cat-score" style="color:${color}">${pct}% de réussite</div>`;
+    }
+    return `<div class="cat-card" onclick="startQuiz('${matKey}','${t}')">
+      <div class="mat-badge ${badge}">${label}</div>
+      <h3>${t}</h3>
+      <p>${matQ.length} question${matQ.length>1?'s':''}</p>
+      ${scoreHtml}
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════
+// QUIZ
+// ════════════════════════════════════════
+function startQuiz(m, t) {
+  lastM = m; lastT = t;
+  let src = Q;
+  if (m !== '__all__') src = src.filter(q => q.m === m);
+  if (t !== '__all__') src = src.filter(q => q.t === t);
+  pool = shuffle([...src]);
+  idx = 0; answered = false; results = []; quizXpGained = 0; currentStreak = 0;
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('score-screen').style.display = 'none';
+  document.getElementById('ai-hint').style.display = 'none';
+  renderQ();
+}
+
+function restartQuiz() { startQuiz(lastM, lastT); }
+
+function renderQ() {
+  const q = pool[idx];
+  const pct = Math.round((idx / pool.length) * 100);
+  document.getElementById('q-counter').textContent = (idx+1) + ' / ' + pool.length;
+  document.getElementById('q-info').textContent = MATIERES[q.m].label + ' · ' + q.t;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('explication').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
+  document.getElementById('ai-hint').style.display = 'none';
+  answered = false;
+  const { tag } = MATIERES[q.m];
+  document.getElementById('q-tags').innerHTML =
+    `<span class="q-tag ${tag}">${MATIERES[q.m].label}</span><span class="q-tag tag-theme">${q.t}</span>`;
+  document.getElementById('q-text').textContent = q.q;
+  const letters = ['A','B','C','D'];
+  const sc = q.c.map((text, i) => ({ text, orig: i }));
+  shuffle(sc);
+  document.getElementById('choices').innerHTML = sc.map((ch, i) => `
+    <button class="choice" onclick="pick(this,${ch.orig},${q.a})">
+      <span class="choice-letter">${letters[i]}</span>
+      <span>${ch.text}</span>
+    </button>`).join('');
+
+  // IA adapte la difficulté : affiche un indice si l'utilisateur a < 50% sur cette matière
+  const uHint = getUser(currentUser.login);
+  if (uHint && uHint.matStats && uHint.matStats[q.m]) {
+    const ms = uHint.matStats[q.m];
+    const tot = ms.ok + ms.ko;
+    if (tot >= 3 && ms.ok/tot < 0.5) {
+      const hint = document.getElementById('ai-hint');
+      document.getElementById('ai-hint-text').textContent =
+        `Tu as eu des difficultés en "${MATIERES[q.m].label}". Rappel : ${q.e.slice(0, 80)}...`;
+      hint.style.display = 'block';
+    }
+  }
+}
+
+function pick(btn, chosen, correct) {
+  if (answered) return;
+  answered = true;
+  totalAns++;
+  const ok = chosen === correct;
+  if (ok) totalOk++; else totalKo++;
+  results.push({ q: pool[idx].q, m: pool[idx].m, t: pool[idx].t, ok });
+
+  // Streak
+  if (ok) {
+    currentStreak++;
+  } else {
+    currentStreak = 0;
+  }
+
+  // XP : +10 correct (+ bonus streak), +2 mauvaise (pour l'effort)
+  let xpDelta = ok ? 10 : 2;
+  let bonusMsg = '';
+  if (ok && currentStreak >= 3) {
+    const bonus = Math.min(currentStreak * 2, 20); // max +20 bonus
+    xpDelta += bonus;
+    bonusMsg = ` 🔥×${currentStreak}`;
+  }
+  quizXpGained += xpDelta;
+
+  document.querySelectorAll('.choice').forEach(b => {
+    const origMatch = parseInt(b.getAttribute('onclick').match(/pick\(this,(\d+)/)[1]);
+    if (origMatch === correct && b !== btn) b.classList.add('reveal-correct');
+    b.disabled = true;
+  });
+  btn.classList.add(ok ? 'correct' : 'wrong');
+  document.getElementById('explication').textContent = pool[idx].e;
+  document.getElementById('explication').style.display = 'block';
+  document.getElementById('btn-next').style.display = 'inline-block';
+  updateHeader();
+  if (ok) showXpToast(`+${xpDelta} XP ⚡${bonusMsg}`);
+}
+
+function nextQ() {
+  idx++;
+  if (idx >= pool.length) { showScore(); return; }
+  renderQ();
+}
+
+function showScore() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('score-screen').style.display = 'block';
+  const pct = Math.round(results.filter(r => r.ok).length / results.length * 100);
+  document.getElementById('sc-pct').textContent = pct + '%';
+
+  // Message + streak parfait
+  const allOk = results.every(r => r.ok);
+  let msg = pct>=80 ? 'Excellent ! Tu es prêt(e) pour le bac.' : pct>=60 ? 'Bien joué ! Encore un peu de révision.' : 'Continue à réviser, tu vas progresser !';
+  if (allOk) msg = '🔥 Quiz parfait ! Streak en cours !';
+  document.getElementById('sc-msg').textContent = msg + ' · ' + results.filter(r=>r.ok).length + '/' + results.length + ' bonnes réponses';
+
+  // XP gagné avec info streak
+  let xpMsg = '⚡ +' + quizXpGained + ' XP gagné';
+  if (currentStreak >= 3) xpMsg += ` · 🔥 Série de ${currentStreak} !`;
+  document.getElementById('xp-gained-display').textContent = xpMsg;
+
+  document.getElementById('sc-details').innerHTML = results.map(r => {
+    const { badge, label } = MATIERES[r.m];
+    return `<div class="score-row">
+      <span class="sq">${r.q}</span>
+      <span class="sm ${badge}">${label}</span>
+      <span class="${r.ok?'ok':'ko'}">${r.ok?'✓':'✗'}</span>
+    </div>`;
+  }).join('');
+
+  // Sauvegarde (inclut l'update XP display)
+  persistSessionStats(quizXpGained);
+}
+
+// ════════════════════════════════════════
+// ADMIN
+// ════════════════════════════════════════
+function showAdmin() {
+  if (!currentUser.isAdmin) return;
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('score-screen').style.display = 'none';
+  document.getElementById('admin-screen').style.display = 'block';
+  document.getElementById('leaderboard-screen').style.display = 'none';
+  document.getElementById('user-dropdown').classList.remove('open');
+  renderAdmin();
+}
+
+function renderAdmin() {
+  const users = getAllUsers();
+  const entries = Object.entries(users);
+
+  // Global stats
+  let totalUsersCount = entries.length;
+  let totalQTotal = entries.reduce((s,[,u])=>s+(u.totalAns||0),0);
+  let totalOkTotal = entries.reduce((s,[,u])=>s+(u.totalOk||0),0);
+  let avgPct = totalQTotal ? Math.round(totalOkTotal/totalQTotal*100) : 0;
+  let totalXp = entries.reduce((s,[,u])=>s+(u.xp||0),0);
+
+  document.getElementById('admin-stats-grid').innerHTML = `
+    <div class="admin-stat-card"><div class="asc-label">Utilisateurs</div><div class="asc-val">${totalUsersCount}</div></div>
+    <div class="admin-stat-card"><div class="asc-label">Questions répondues</div><div class="asc-val">${totalQTotal}</div></div>
+    <div class="admin-stat-card"><div class="asc-label">Réussite globale</div><div class="asc-val">${avgPct}%</div></div>
+    <div class="admin-stat-card"><div class="asc-label">XP total généré</div><div class="asc-val">${totalXp}</div></div>
+  `;
+
+  if (entries.length === 0) {
+    document.getElementById('users-tbody').innerHTML = '<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:2rem;font-family:var(--mono);font-size:0.78rem;">Aucun utilisateur enregistré.</td></tr>';
+    return;
+  }
+
+  document.getElementById('users-tbody').innerHTML = entries.map(([login, u]) => {
+    const tot = (u.totalOk||0) + (u.totalKo||0);
+    const pct = tot ? Math.round(u.totalOk/tot*100) : 0;
+    const xp = u.xp || 0;
+    const lvInfo = getLevelInfo(xp);
+    const pctColor = pct>=70?'var(--green)':pct>=40?'var(--accent)':'var(--red)';
+    const streak = u.bestWinStreak || 0;
+    return `<tr>
+      <td><strong>${login}</strong></td>
+      <td>
+        <div class="level-badge">Niv.${lvInfo.lv} ${lvInfo.name}</div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);margin-top:3px">${xp} XP</div>
+      </td>
+      <td>
+        <span style="color:${pctColor};font-weight:700">${pct}%</span>
+        <div class="pct-bar"><div class="pct-bar-fill" style="width:${pct}%;background:${pctColor}"></div></div>
+        <div style="font-size:0.65rem;color:var(--muted)">${u.totalOk||0}✓ / ${u.totalKo||0}✗</div>
+      </td>
+      <td>${u.totalAns||0} rép.</td>
+      <td style="color:var(--accent)">${streak > 0 ? '🔥 '+streak : '—'}</td>
+      <td>
+        <div class="admin-actions">
+          <button class="admin-btn" onclick="openEditModal('${login}')">✏️ Modifier</button>
+          <button class="admin-btn xp-btn" onclick="openGiveXpModal('${login}')">⚡ Give XP</button>
+          <button class="admin-btn" onclick="openResetModal('${login}')">🔄 Reset stats</button>
+          <button class="admin-btn danger" onclick="deleteUser('${login}')">🗑 Supprimer</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openEditModal(login) {
+  document.getElementById('edit-target').value = login;
+  document.getElementById('edit-login').value = login;
+  document.getElementById('edit-pass').value = '';
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function saveEditUser() {
+  const oldLogin = document.getElementById('edit-target').value;
+  const newLogin = document.getElementById('edit-login').value.trim();
+  const newPass  = document.getElementById('edit-pass').value;
+  if (!newLogin) return;
+
+  const store = loadStore();
+  const userData = store[oldLogin];
+  if (!userData) return;
+
+  if (newPass) userData.pass = newPass;
+
+  if (newLogin !== oldLogin) {
+    if (store[newLogin]) { alert('Cet identifiant existe déjà.'); return; }
+    delete store[oldLogin];
+    store[newLogin] = userData;
+  } else {
+    store[oldLogin] = userData;
+  }
+  saveStore(store);
+  closeModal('edit-modal');
+  renderAdmin();
+}
+
+function openResetModal(login) {
+  document.getElementById('reset-target').value = login;
+  document.getElementById('reset-modal').classList.add('open');
+}
+
+function doResetStats() {
+  const login = document.getElementById('reset-target').value;
+  const u = getUser(login);
+  if (!u) return;
+  u.xp = 0; u.totalAns = 0; u.totalOk = 0; u.totalKo = 0; u.matStats = {};
+  u.winStreak = 0; u.bestWinStreak = 0; u.bestStreak = 0;
+  saveUser(login, u);
+  closeModal('reset-modal');
+  renderAdmin();
+}
+
+function deleteUser(login) {
+  if (!confirm(`Supprimer définitivement le compte "${login}" ?`)) return;
+  const store = loadStore();
+  delete store[login];
+  saveStore(store);
+  renderAdmin();
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ════════════════════════════════════════
+// BACKUP EXPORT / IMPORT
+// ════════════════════════════════════════
+function exportBackup() {
+  const data = loadStore();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href     = url;
+  a.download = `bacpro_sauvegarde_${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showBackupMsg('✅ Sauvegarde exportée avec succès.', 'ok');
+}
+
+function importBackup(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      // Validation basique
+      if (typeof data !== 'object' || Array.isArray(data)) throw new Error('Format invalide');
+      // Merge : on garde les comptes existants, on écrase avec les données importées
+      const current = loadStore();
+      const merged  = { ...current, ...data };
+      saveStore(merged);
+      renderAdmin();
+      showBackupMsg(`✅ Import réussi — ${Object.keys(data).length} compte(s) restauré(s).`, 'ok');
+    } catch(err) {
+      showBackupMsg("❌ Fichier invalide. Vérifie que c'est bien un fichier de sauvegarde BacPro.", 'err');
+    }
+    // Reset file input pour pouvoir réimporter le même fichier
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function showBackupMsg(msg, type) {
+  const el = document.getElementById('backup-msg');
+  el.className = type === 'ok' ? 'backup-msg-ok' : 'backup-msg-err';
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+function openGiveXpModal(login) {
+  const u = getUser(login);
+  if (!u) return;
+  document.getElementById('givexp-target').value = login;
+  document.getElementById('givexp-target-label').textContent = login;
+  document.getElementById('givexp-amount').value = '';
+  const info = getLevelInfo(u.xp || 0);
+  document.getElementById('givexp-preview').textContent = `XP actuel : ${u.xp||0} XP — Niv.${info.lv} ${info.name}`;
+  document.getElementById('givexp-modal').classList.add('open');
+  document.getElementById('givexp-amount').focus();
+}
+
+function setXpPreset(val) {
+  document.getElementById('givexp-amount').value = val;
+  updateGiveXpPreview();
+}
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'givexp-amount') updateGiveXpPreview();
+});
+
+function updateGiveXpPreview() {
+  const login = document.getElementById('givexp-target').value;
+  const u = getUser(login);
+  if (!u) return;
+  const delta = parseInt(document.getElementById('givexp-amount').value) || 0;
+  const newXp = Math.max(0, (u.xp||0) + delta);
+  const info = getLevelInfo(newXp);
+  const sign = delta >= 0 ? '+' : '';
+  document.getElementById('givexp-preview').textContent =
+    `${u.xp||0} XP ${sign}${delta} → ${newXp} XP — Niv.${info.lv} ${info.name}`;
+}
+
+function doGiveXp() {
+  const login = document.getElementById('givexp-target').value;
+  const delta = parseInt(document.getElementById('givexp-amount').value);
+  if (isNaN(delta) || delta === 0) return;
+  const u = getUser(login);
+  if (!u) return;
+  u.xp = Math.max(0, (u.xp||0) + delta);
+  saveUser(login, u);
+  closeModal('givexp-modal');
+  renderAdmin();
+  showXpToast(`⚡ ${delta > 0 ? '+' : ''}${delta} XP → ${login}`);
+}
+
+// ════════════════════════════════════════
+// NAV
+// ════════════════════════════════════════
+function showHome() {
+  document.getElementById('home-screen').style.display = 'block';
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('score-screen').style.display = 'none';
+  document.getElementById('admin-screen').style.display = 'none';
+  document.getElementById('leaderboard-screen').style.display = 'none';
+  document.getElementById('user-dropdown').classList.remove('open');
+  {
+    const u = getUser(currentUser.login);
+    if (u) {
+      updateXpDisplay(u.xp||0);
+      // Streak bar
+      const ws = u.winStreak || 0;
+      const bs = u.bestWinStreak || 0;
+      const sb = document.getElementById('streak-bar');
+      document.getElementById('streak-count').textContent = ws;
+      document.getElementById('streak-best').textContent = bs > 0 ? `Record : ${bs} 🏅` : '';
+      sb.style.display = ws > 0 || bs > 0 ? 'flex' : 'none';
+    }
+  }
+  renderCatGrid('__all__');
+}
+
+function showLeaderboard() {
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('score-screen').style.display = 'none';
+  document.getElementById('admin-screen').style.display = 'none';
+  document.getElementById('leaderboard-screen').style.display = 'block';
+  document.getElementById('user-dropdown').classList.remove('open');
+  renderLeaderboard('xp', document.querySelector('.lb-tab'));
+}
+
+function renderLeaderboard(sortBy, btn) {
+  if (btn) {
+    document.querySelectorAll('.lb-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const users = getAllUsers();
+  const entries = Object.entries(users);
+  if (entries.length === 0) {
+    document.getElementById('lb-list').innerHTML = '<div class="lb-empty">Aucun joueur inscrit pour le moment.</div>';
+    return;
+  }
+
+  const sorted = entries.map(([login, u]) => {
+    const tot = (u.totalOk||0) + (u.totalKo||0);
+    const pct = tot ? Math.round((u.totalOk||0)/tot*100) : 0;
+    return {
+      login,
+      xp: u.xp || 0,
+      streak: u.bestWinStreak || 0,
+      pct,
+      ans: u.totalAns || 0,
+      lv: getLevelInfo(u.xp||0)
+    };
+  }).sort((a,b) => {
+    if (sortBy==='xp')     return b.xp - a.xp;
+    if (sortBy==='streak') return b.streak - a.streak;
+    if (sortBy==='pct')    return b.pct - a.pct || b.ans - a.ans;
+    if (sortBy==='ans')    return b.ans - a.ans;
+    return 0;
+  });
+
+  const rankIcons = ['🥇','🥈','🥉'];
+  const rankClasses = ['gold','silver','bronze'];
+
+  document.getElementById('lb-list').innerHTML = sorted.map((u, i) => {
+    const isMe = currentUser && u.login === currentUser.login;
+    const rank = i < 3 ? `<span class="lb-rank ${rankClasses[i]}">${rankIcons[i]}</span>` : `<span class="lb-rank">#${i+1}</span>`;
+    let mainVal = '', subVal = '';
+    if (sortBy==='xp')     { mainVal = u.xp+' XP'; subVal = `Niv.${u.lv.lv} ${u.lv.name}`; }
+    if (sortBy==='streak') { mainVal = u.streak > 0 ? `🔥 ${u.streak} streak` : '—'; subVal = u.xp+' XP'; }
+    if (sortBy==='pct')    { mainVal = u.pct+'%'; subVal = u.ans+' questions'; }
+    if (sortBy==='ans')    { mainVal = u.ans+' rép.'; subVal = u.pct+'% réussite'; }
+    return `<div class="lb-row${isMe?' me':''}">
+      ${rank}
+      <div class="lb-name">${u.login}${isMe?' <span style="font-size:0.65rem;color:var(--accent)">(toi)</span>':''}
+        <small>Niv.${u.lv.lv} — ${u.lv.name}</small>
+      </div>
+      <div class="lb-val">${mainVal}<small>${subVal}</small></div>
+    </div>`;
+  }).join('');
+}
+
+function shuffle(arr) {
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+function updateHeader() {
+  document.getElementById('h-q').textContent  = totalAns;
+  document.getElementById('h-ok').textContent = totalOk;
+  document.getElementById('h-ko').textContent = totalKo;
+  document.getElementById('h-pct').textContent = totalAns ? Math.round(totalOk/totalAns*100)+'%' : '—';
+}
+
+// ════════════════════════════════════════
+// CHARTS
+// ════════════════════════════════════════
+let chartInstance = null;
+let chartVisible = false;
+let currentChartType = 'bar';
+
+function toggleChart() {
+  chartVisible = !chartVisible;
+  const panel = document.getElementById('chart-panel');
+  const btn   = document.getElementById('btn-chart');
+  panel.style.display = chartVisible ? 'block' : 'none';
+  btn.textContent = chartVisible ? '✕ Masquer les stats' : '📊 Voir les stats';
+  if (chartVisible) drawChart(currentChartType);
+}
+function switchChart(type, btn) {
+  currentChartType = type;
+  document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  drawChart(type);
+}
+function drawChart(type) {
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+  document.getElementById('chart-legend').innerHTML = '';
+  if (type==='bar') drawBarChart();
+  else if (type==='mat') drawMatChart();
+  else if (type==='line') drawLineChart();
+  else if (type==='radar') drawRadarChart();
+}
+
+function baseOptions(title) {
+  return {
+    responsive:true,
+    plugins:{
+      legend:{display:false},
+      title:{display:!!title,text:title,color:'#888',font:{family:"'IBM Plex Mono',monospace",size:11},padding:{bottom:12}},
+      tooltip:{backgroundColor:'#1a1a1a',borderColor:'#2e2e2e',borderWidth:1,titleColor:'#f0ede8',bodyColor:'#888',titleFont:{family:"'Syne',sans-serif",size:12},bodyFont:{family:"'IBM Plex Mono',monospace",size:11},padding:10}
+    },
+    scales:{
+      x:{ticks:{color:'#555',font:{family:"'IBM Plex Mono',monospace",size:10},maxRotation:35},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'#2e2e2e'}},
+      y:{ticks:{color:'#555',font:{family:"'IBM Plex Mono',monospace",size:10}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'#2e2e2e'},beginAtZero:true}
+    }
+  };
+}
+
+function drawBarChart() {
+  const byTheme = {};
+  results.forEach(r => {
+    if (!byTheme[r.t]) byTheme[r.t] = { ok:0, ko:0, m:r.m };
+    r.ok ? byTheme[r.t].ok++ : byTheme[r.t].ko++;
+  });
+  const themes = Object.keys(byTheme);
+  const labels = themes.map(t => t.length>16?t.slice(0,15)+'…':t);
+  const ctx = document.getElementById('myChart').getContext('2d');
+  const opts = baseOptions('Résultats par thème');
+  opts.scales.x.stacked = true; opts.scales.y.stacked = true;
+  chartInstance = new Chart(ctx, {type:'bar', data:{labels, datasets:[
+    {label:'Correctes', data:themes.map(t=>byTheme[t].ok), backgroundColor:themes.map(t=>MAT_COLORS[byTheme[t].m].ok), borderRadius:4, borderSkipped:false},
+    {label:'Ratées',    data:themes.map(t=>byTheme[t].ko), backgroundColor:themes.map(t=>MAT_COLORS[byTheme[t].m].ko), borderRadius:4, borderSkipped:false}
+  ]}, options:opts});
+}
+
+function drawMatChart() {
+  const byMat = {};
+  Object.keys(MATIERES).forEach(k => { byMat[k] = {ok:0,ko:0}; });
+  results.forEach(r => { r.ok ? byMat[r.m].ok++ : byMat[r.m].ko++; });
+  const mats = Object.keys(byMat).filter(m => byMat[m].ok+byMat[m].ko>0);
+  const labels = mats.map(m => MATIERES[m].label);
+  const pcts = mats.map(m => { const d=byMat[m]; const t=d.ok+d.ko; return t?Math.round(d.ok/t*100):0; });
+  const colors = mats.map(m => MAT_COLORS[m].line);
+  const ctx = document.getElementById('myChart').getContext('2d');
+  chartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels: labels, datasets: [{ data: pcts, backgroundColor: colors, borderColor: '#0f0f0f', borderWidth: 3, hoverOffset: 8 }] },
+    options: {
+      responsive: true,
+      cutout: '62%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a1a1a', borderColor: '#2e2e2e', borderWidth: 1,
+          titleColor: '#f0ede8', bodyColor: '#888',
+          callbacks: {
+            label: function(item) {
+              var m = mats[item.dataIndex];
+              var d = byMat[m];
+              var t = d.ok + d.ko;
+              return ' ' + d.ok + '\u2713 / ' + d.ko + '\u2717 \u2014 ' + Math.round(d.ok / t * 100) + '%';
+            }
+          }
+        }
+      }
+    }
+  });
+  const legend = document.getElementById('chart-legend');
+  mats.forEach((m,i) => {
+    const d=byMat[m]; const t=d.ok+d.ko; const pct=t?Math.round(d.ok/t*100):0;
+    legend.innerHTML += `<span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:${colors[i]};display:inline-block"></span>${MATIERES[m].label} — <strong style="color:${colors[i]}">${pct}%</strong></span>`;
+  });
+}
+
+function drawLineChart() {
+  const ctx = document.getElementById('myChart').getContext('2d');
+  const cumOk=[], cumPct=[];
+  let ok=0;
+  results.forEach((r,i) => { if(r.ok)ok++; cumOk.push(ok); cumPct.push(Math.round(ok/(i+1)*100)); });
+  const labels = results.map((_,i) => 'Q'+(i+1));
+  const opts = baseOptions('Score cumulé');
+  const gradOk = ctx.createLinearGradient(0,0,0,300);
+  gradOk.addColorStop(0,'rgba(76,175,115,0.25)'); gradOk.addColorStop(1,'rgba(76,175,115,0)');
+  const gradPct = ctx.createLinearGradient(0,0,0,300);
+  gradPct.addColorStop(0,'rgba(212,168,83,0.2)'); gradPct.addColorStop(1,'rgba(212,168,83,0)');
+  chartInstance = new Chart(ctx,{type:'line',data:{labels,datasets:[
+    {label:'Bonnes réponses',data:cumOk,borderColor:'#4caf73',backgroundColor:gradOk,tension:0.3,pointRadius:results.length>30?0:3,pointBackgroundColor:'#4caf73',fill:true,yAxisID:'y'},
+    {label:'% score',data:cumPct,borderColor:'#d4a853',backgroundColor:gradPct,tension:0.3,pointRadius:results.length>30?0:3,pointBackgroundColor:'#d4a853',fill:true,borderDash:[4,3],yAxisID:'y2'}
+  ]},options:{...opts,scales:{...opts.scales,y:{...opts.scales.y,position:'left'},y2:{...opts.scales.y,position:'right',max:100,ticks:{...opts.scales.y.ticks,callback:v=>v+'%'},grid:{display:false}}}}});
+}
+
+function drawRadarChart() {
+  const byTheme={};
+  results.forEach(r=>{if(!byTheme[r.t])byTheme[r.t]={ok:0,tot:0};byTheme[r.t].tot++;if(r.ok)byTheme[r.t].ok++;});
+  const themes=Object.keys(byTheme);
+  const pcts=themes.map(t=>Math.round(byTheme[t].ok/byTheme[t].tot*100));
+  const labels=themes.map(t=>t.length>14?t.slice(0,13)+'…':t);
+  const ctx=document.getElementById('myChart').getContext('2d');
+  chartInstance=new Chart(ctx,{type:'radar',data:{labels,datasets:[{label:'Score (%)',data:pcts,backgroundColor:'rgba(212,168,83,0.15)',borderColor:'#d4a853',pointBackgroundColor:'#d4a853',pointBorderColor:'#0f0f0f',borderWidth:2,pointRadius:4}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1a1a',borderColor:'#2e2e2e',borderWidth:1,callbacks:{label:ctx=>` ${ctx.parsed.r}%`}}},scales:{r:{ticks:{backdropColor:'transparent',color:'#555',font:{size:9},stepSize:25,callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.07)'},pointLabels:{color:'#888',font:{size:10}},suggestedMin:0,suggestedMax:100,angleLines:{color:'rgba(255,255,255,0.05)'}}}}});
+}
+</script>
+</body>
+</html>
