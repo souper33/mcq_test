@@ -489,6 +489,8 @@
       <button class="xp-preset" onclick="setXpPreset(250)">+250</button>
       <button class="xp-preset" onclick="setXpPreset(500)">+500</button>
       <button class="xp-preset" onclick="setXpPreset(1000)">+1000</button>
+      <button class="xp-preset" onclick="setXpPreset(5000)">+5000</button>
+      <button class="xp-preset" onclick="setXpPreset(10000)">+10000</button>
       <button class="xp-preset" style="color:var(--red);border-color:var(--red-border)" onclick="setXpPreset(-100)">-100</button>
     </div>
     <div id="givexp-preview" style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;min-height:1.2em"></div>
@@ -551,7 +553,8 @@ function createUser(login, pass) {
 const LEVELS = [
   {name:"Débutant",min:0}, {name:"Apprenti",min:100}, {name:"Studieux",min:300},
   {name:"Confirmé",min:600}, {name:"Expert",min:1000}, {name:"Maître",min:1500},
-  {name:"As du Bac",min:2200}, {name:"Légende",min:3000}
+  {name:"As du Bac",min:2200}, {name:"Légende",min:3000}, {name:"Maxeur",min:5000}, {name:"Océan Pacifique",min:10000}, {name:"Sale Sale Yorkmouth à la Fraise",min:20000}, {name:"Shrek",min:30000},
+  {name:"Le Calçon perdu d'Arginthe",min:40000}, {name:"BousquetGPT Mythos",min:50000},
 ];
 function getLevel(xp) {
   let lv = 0;
