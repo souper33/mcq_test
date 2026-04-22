@@ -1055,6 +1055,22 @@ function filterMat(m, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderCatGrid(m);
+  
+  // Met à jour le bouton "Tout réviser" pour cibler uniquement la matière en cours
+  const btnAll = document.querySelector('#home-screen .btn-all');
+  if (btnAll) {
+    btnAll.setAttribute('onclick', `startQuiz('${m}', '__all__')`);
+  }
+}function filterMat(m, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCatGrid(m);
+  
+  // Met à jour le bouton "Tout réviser" pour cibler uniquement la matière en cours
+  const btnAll = document.querySelector('#home-screen .btn-all');
+  if (btnAll) {
+    btnAll.setAttribute('onclick', `startQuiz('${m}', '__all__')`);
+  }
 }
 
 function renderCatGrid(m) {
