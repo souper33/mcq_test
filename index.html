@@ -282,7 +282,6 @@
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">BAC<span>PRO</span></div>
@@ -307,7 +306,6 @@
   </div>
 </div>
 
-<!-- APP -->
 <div id="app" style="display:none">
 <header>
   <div class="logo">BAC<span>PRO</span></div>
@@ -332,7 +330,6 @@
 </header>
 
 <main>
-  <!-- HOME -->
   <div id="home-screen">
     <div class="home-title">Révise ton<br><span>bac pro</span></div>
     <div class="home-sub" id="total-count"></div>
@@ -359,7 +356,6 @@
     </div>
   </div>
 
-  <!-- QUIZ -->
   <div id="quiz-screen">
     <button class="btn-back" onclick="showHome()">← Retour</button>
     <div class="progress-wrap">
@@ -374,7 +370,6 @@
     <button class="btn-next" id="btn-next" onclick="nextQ()">Question suivante →</button>
   </div>
 
-  <!-- SCORE -->
   <div id="score-screen">
     <h2><span class="score-pct" id="sc-pct"></span></h2>
     <p id="sc-msg"></p>
@@ -399,7 +394,6 @@
     </div>
   </div>
 
-  <!-- ADMIN -->
   <div id="admin-screen">
     <button class="btn-back" onclick="showHome()">← Retour</button>
     <div class="admin-title">Panneau <span>Admin</span></div>
@@ -427,7 +421,6 @@
       <tbody id="users-tbody"></tbody>
     </table>
   </div>
-  <!-- LEADERBOARD -->
   <div id="leaderboard-screen">
     <button class="btn-back" onclick="showHome()">← Retour</button>
     <div class="lb-title">🏆 <span>Classement</span></div>
@@ -443,10 +436,8 @@
 </main>
 </div>
 
-<!-- TOAST XP -->
 <div class="xp-toast" id="xp-toast"></div>
 
-<!-- MODAL EDIT USER -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
     <h3>✏️ Modifier l'utilisateur</h3>
@@ -460,7 +451,6 @@
   </div>
 </div>
 
-<!-- MODAL RESET CONFIRM -->
 <div class="modal-overlay" id="reset-modal">
   <div class="modal">
     <h3>🔄 Réinitialiser les stats ?</h3>
@@ -473,7 +463,6 @@
   </div>
 </div>
 
-<!-- MODAL GIVE XP -->
 <div class="modal-overlay" id="givexp-modal">
   <div class="modal">
     <h3>⚡ Donner de l'XP</h3>
@@ -504,11 +493,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 // ════════════════════════════════════════
-// STORAGE (localStorage + fallback mémoire)
+// SECURITÉ (OBFUSCATION / HACHAGE)
+// ════════════════════════════════════════
+// Fonction pour masquer les mots de passe des joueurs dans le stockage
+function hashPassword(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    let char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(16);
+}
+
+// ════════════════════════════════════════
+// STORAGE CONFIGURATION
 // ════════════════════════════════════════
 const ADMIN_LOGIN = 'Souper33';
-const ADMIN_PASS  = 'password0201';
-const STORE_KEY   = 'bacpro_users_v2';
+// Mot de passe admin encodé en Base64 (c'est 'password0201').
+// Si tu veux le changer plus tard, ouvre la console F12 de ton navigateur, 
+// tape btoa('ton_nouveau_mot_de_passe') et colle le résultat ici.
+const ADMIN_PASS_B64 = 'cGFzc3dvcmQwMjAx'; 
+
+// Changé en v3 pour forcer la création de nouveaux comptes sécurisés (les anciens mots de passe en clair créeront des erreurs)
+const STORE_KEY   = 'bacpro_users_v3'; 
 
 // Fallback in-memory si localStorage indisponible
 let _memStore = {};
@@ -537,7 +545,7 @@ function getAllUsers() { return loadStore(); }
 function createUser(login, pass) {
   if (getUser(login)) return false;
   saveUser(login, {
-    pass: pass,
+    pass: pass, // Attention : on s'attend à recevoir un mot de passe DÉJÀ haché ici
     xp: 0,
     totalAns: 0,
     totalOk: 0,
@@ -595,14 +603,20 @@ function doLogin() {
   const err   = document.getElementById('login-err');
   err.style.display='none';
   if (!login || !pass) { err.textContent='Remplis tous les champs.'; err.style.display='block'; return; }
-  // Admin check
-  if (login === ADMIN_LOGIN && pass.toLowerCase() === ADMIN_PASS.toLowerCase()) {
+  
+  // Admin check (Vérification via Base64 pour ne pas exposer le mot de passe en clair)
+  if (login === ADMIN_LOGIN && btoa(pass.toLowerCase()) === ADMIN_PASS_B64) {
     startSession(login, true);
     return;
   }
+  
   const u = getUser(login);
   if (!u) { err.textContent='Identifiant introuvable.'; err.style.display='block'; return; }
-  if (u.pass !== pass) { err.textContent='Mot de passe incorrect.'; err.style.display='block'; return; }
+  
+  // On compare le mot de passe tapé (une fois haché) avec le hash stocké
+  const hashedInputPass = hashPassword(pass);
+  if (u.pass !== hashedInputPass) { err.textContent='Mot de passe incorrect.'; err.style.display='block'; return; }
+  
   startSession(login, false);
 }
 
@@ -616,7 +630,11 @@ function doRegister() {
   if (login === ADMIN_LOGIN) { err.textContent='Cet identifiant est réservé.'; err.style.display='block'; return; }
   if (pass.length < 6) { err.textContent='Mot de passe trop court (6 caractères min).'; err.style.display='block'; return; }
   if (pass !== pass2) { err.textContent='Les mots de passe ne correspondent pas.'; err.style.display='block'; return; }
-  if (!createUser(login, pass)) { err.textContent='Cet identifiant existe déjà.'; err.style.display='block'; return; }
+  
+  // On sauvegarde une version HACHÉE du mot de passe
+  const hashedPass = hashPassword(pass);
+  if (!createUser(login, hashedPass)) { err.textContent='Cet identifiant existe déjà.'; err.style.display='block'; return; }
+  
   startSession(login, false);
 }
 
@@ -624,7 +642,7 @@ function startSession(login, isAdmin) {
   currentUser = { login, isAdmin };
   // S'assurer que même l'admin a un profil joueur dans le store
   if (!getUser(login)) {
-    saveUser(login, { pass: ADMIN_PASS, xp:0, totalAns:0, totalOk:0, totalKo:0, matStats:{}, winStreak:0, bestWinStreak:0, bestStreak:0 });
+    saveUser(login, { pass: hashPassword(btoa(ADMIN_PASS_B64)), xp:0, totalAns:0, totalOk:0, totalKo:0, matStats:{}, winStreak:0, bestWinStreak:0, bestStreak:0 });
   }
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
@@ -765,7 +783,7 @@ const MAT_COLORS = {
 // ════════════════════════════════════════
 const Q = [
 // ════════ HISTOIRE ════════
-{m:"hist",t:"Guerre 14-18",q:"En quelle année débute la Première Guerre mondiale ?",c:["1912","1914","1916","1918"],a:1,e:"La guerre commence le 28 juillet 1914 avec la déclaration de guerre de l'Autriche-Hongrie à la Serbie."},
+{m:"hist",t:"Guerre 14-18",q:"En quelle année débute la Première Guerre mondiale ?",c:["1912","1914","1916","1918"],a:1,e:"La guerre commence le 28 juillet 1914 avec la déclaration de guerre de l'Autriche-Hongrie à la Serbie.", h:"Pense à l'attentat de Sarajevo qui a eu lieu au début de l'été."},
 {m:"hist",t:"Guerre 14-18",q:"Qu'est-ce que l'Union sacrée (1914) ?",c:["Une alliance franco-britannique","Le rassemblement de tous les partis politiques derrière l'effort de guerre","Un traité secret avec la Russie","La mobilisation des femmes"],a:1,e:"L'Union sacrée suspend les luttes politiques : tous les partis soutiennent le gouvernement face à l'ennemi."},
 {m:"hist",t:"Guerre 14-18",q:"Qu'est-ce que la guerre de tranchées ?",c:["Une stratégie d'attaque rapide","Une guerre navale","Un conflit de positions fixes sur de longs fronts fortifiés","Des batailles de chars"],a:2,e:"La guerre de tranchées désigne le front immobile de 1914-1918 : deux lignes de tranchées face à face."},
 {m:"hist",t:"Guerre 14-18",q:"Quelle est la date de l'armistice de la Première Guerre mondiale ?",c:["11 novembre 1918","8 mai 1918","28 juin 1919","22 juin 1940"],a:0,e:"L'armistice est signé le 11 novembre 1918 à 11h dans un wagon à Rethondes."},
@@ -1064,16 +1082,6 @@ function filterMat(m, btn) {
   if (btnAll) {
     btnAll.setAttribute('onclick', `startQuiz('${m}', '__all__')`);
   }
-}function filterMat(m, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderCatGrid(m);
-  
-  // Met à jour le bouton "Tout réviser" pour cibler uniquement la matière en cours
-  const btnAll = document.querySelector('#home-screen .btn-all');
-  if (btnAll) {
-    btnAll.setAttribute('onclick', `startQuiz('${m}', '__all__')`);
-  }
 }
 
 function renderCatGrid(m) {
@@ -1145,7 +1153,6 @@ function renderQ() {
     </button>`).join('');
 
   // IA adapte la difficulté : affiche un indice si l'utilisateur a < 50% sur cette matière
-  // IA adapte la difficulté : affiche un indice si l'utilisateur a < 50% sur cette matière
   const uHint = getUser(currentUser.login);
   if (uHint && uHint.matStats && uHint.matStats[q.m]) {
     const ms = uHint.matStats[q.m];
@@ -1160,7 +1167,6 @@ function renderQ() {
         `Difficulté détectée en ${MATIERES[q.m].label} 💡 ${texteIndice}`;
       hint.style.display = 'block';
     }
-  }
   }
 }
 
@@ -1324,7 +1330,8 @@ function saveEditUser() {
   const userData = store[oldLogin];
   if (!userData) return;
 
-  if (newPass) userData.pass = newPass;
+  // Si on tape un nouveau mot de passe pour l'utilisateur, on le hache.
+  if (newPass) userData.pass = hashPassword(newPass);
 
   if (newLogin !== oldLogin) {
     if (store[newLogin]) { alert('Cet identifiant existe déjà.'); return; }
