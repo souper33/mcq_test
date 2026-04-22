@@ -1145,16 +1145,22 @@ function renderQ() {
     </button>`).join('');
 
   // IA adapte la difficulté : affiche un indice si l'utilisateur a < 50% sur cette matière
+  // IA adapte la difficulté : affiche un indice si l'utilisateur a < 50% sur cette matière
   const uHint = getUser(currentUser.login);
   if (uHint && uHint.matStats && uHint.matStats[q.m]) {
     const ms = uHint.matStats[q.m];
     const tot = ms.ok + ms.ko;
     if (tot >= 3 && ms.ok/tot < 0.5) {
       const hint = document.getElementById('ai-hint');
-      document.getElementById('ai-hint-text').textContent =
-        `Tu as eu des difficultés en "${MATIERES[q.m].label}". Rappel : ${q.e.slice(0, 80)}...`;
+      
+      // On utilise l'indice personnalisé (q.h) s'il existe, sinon un conseil d'encouragement
+      const texteIndice = q.h ? q.h : `Concentre-toi sur le thème "${q.t}" et essaie de procéder par élimination.`;
+      
+      document.getElementById('ai-hint-text').textContent = 
+        `Difficulté détectée en ${MATIERES[q.m].label} 💡 ${texteIndice}`;
       hint.style.display = 'block';
     }
+  }
   }
 }
 
