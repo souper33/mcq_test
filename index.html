@@ -453,12 +453,13 @@
 
 <div class="modal-overlay" id="reset-modal">
   <div class="modal">
-    <h3>🔄 Réinitialiser les stats ?</h3>
-    <p style="font-family:var(--mono);font-size:0.78rem;color:var(--muted);margin:0.5rem 0 1rem">Les scores et XP de cet utilisateur seront remis à zéro. Irréversible.</p>
+    <h3 id="reset-title">🔄 Réinitialiser ?</h3>
+    <p id="reset-desc" style="font-family:var(--mono);font-size:0.78rem;color:var(--muted);margin:0.5rem 0 1rem"></p>
     <input type="hidden" id="reset-target">
+    <input type="hidden" id="reset-type">
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closeModal('reset-modal')">Annuler</button>
-      <button class="modal-ok" style="background:var(--red)" onclick="doResetStats()">Réinitialiser</button>
+      <button class="modal-ok" style="background:var(--red)" onclick="doResetAction()">Réinitialiser</button>
     </div>
   </div>
 </div>
@@ -1305,7 +1306,8 @@ function renderAdmin() {
         <div class="admin-actions">
           <button class="admin-btn" onclick="openEditModal('${login}')">✏️ Modifier</button>
           <button class="admin-btn xp-btn" onclick="openGiveXpModal('${login}')">⚡ Give XP</button>
-          <button class="admin-btn" onclick="openResetModal('${login}')">🔄 Reset stats</button>
+          <button class="admin-btn" onclick="openResetModal('${login}', 'xp')">🔄 Reset XP</button>
+          <button class="admin-btn" onclick="openResetModal('${login}', 'stats')">🔄 Reset stats</button>
           <button class="admin-btn danger" onclick="deleteUser('${login}')">🗑 Supprimer</button>
         </div>
       </td>
@@ -1345,17 +1347,42 @@ function saveEditUser() {
   renderAdmin();
 }
 
-function openResetModal(login) {
+function openResetModal(login, type) {
   document.getElementById('reset-target').value = login;
+  document.getElementById('reset-type').value = type;
+  
+  const title = document.getElementById('reset-title');
+  const desc = document.getElementById('reset-desc');
+  
+  if (type === 'xp') {
+    title.textContent = "🔄 Réinitialiser l'XP ?";
+    desc.textContent = "L'expérience (XP) et le niveau de cet utilisateur seront remis à zéro. Irréversible.";
+  } else {
+    title.textContent = "🔄 Réinitialiser les statistiques ?";
+    desc.textContent = "Les scores, bonnes/mauvaises réponses et séries de quiz seront remis à zéro (l'XP sera conservée). Irréversible.";
+  }
+  
   document.getElementById('reset-modal').classList.add('open');
 }
 
-function doResetStats() {
+function doResetAction() {
   const login = document.getElementById('reset-target').value;
+  const type = document.getElementById('reset-type').value;
   const u = getUser(login);
   if (!u) return;
-  u.xp = 0; u.totalAns = 0; u.totalOk = 0; u.totalKo = 0; u.matStats = {};
-  u.winStreak = 0; u.bestWinStreak = 0; u.bestStreak = 0;
+  
+  if (type === 'xp') {
+    u.xp = 0;
+  } else if (type === 'stats') {
+    u.totalAns = 0; 
+    u.totalOk = 0; 
+    u.totalKo = 0; 
+    u.matStats = {};
+    u.winStreak = 0; 
+    u.bestWinStreak = 0; 
+    u.bestStreak = 0;
+  }
+  
   saveUser(login, u);
   closeModal('reset-modal');
   renderAdmin();
